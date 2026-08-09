@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>味帖 - あじちょう</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --washi:#F1ECDD;
+    --washi-deep:#E7DFC9;
+    --sumi:#242822;
+    --sumi-soft:#5B5F55;
+    --ai:#1F4E63;
+    --ai-deep:#173B4B;
+    --hanko:#A6392C;
+    --hanko-deep:#832C22;
+    --moss:#6B7A4F;
+    --line:#D7CDB0;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(255,255,255,0.35), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(0,0,0,0.03), transparent 45%),
+      var(--washi);
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    color:var(--sumi);
+    min-height:100vh;
+    padding-bottom:90px;
+  }
+  .wrap{max-width:520px;margin:0 auto;padding:20px 16px 0;}
+  header.top{
+    display:flex;align-items:baseline;justify-content:space-between;
+    padding:6px 2px 16px;border-bottom:1px solid var(--line);margin-bottom:18px;
+  }
+  header.top h1{
+    font-family:'Shippori Mincho',serif;font-weight:700;font-size:26px;margin:0;
+    letter-spacing:0.06em;color:var(--sumi);
+  }
+  header.top .sub{font-size:11px;color:var(--sumi-soft);letter-spacing:0.15em;}
+
+  .stamp{
+    width:54px;height:54px;border-radius:50%;
+    border:2.5px solid var(--hanko);
+    display:flex;align-items:center;justify-content:center;
+    flex-direction:column;color:var(--hanko);
+    font-family:'Shippori Mincho',serif;font-weight:700;
+    transform:rotate(-6deg);flex-shrink:0;
+    background:rgba(166,57,44,0.04);
+  }
+  .stamp .num{font-size:17px;line-height:1;}
+  .stamp .lbl{font-size:8px;letter-spacing:0.1em;margin-top:1px;}
+
+  section{display:none;}
+  section.active{display:block;}
+
+  .card{
+    background:rgba(255,255,255,0.55);
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:16px;margin-bottom:14px;
+    position:relative;
+  }
+  .card::before{
+    content:'';position:absolute;left:0;top:14px;bottom:14px;width:3px;background:var(--ai);
+    opacity:0.7;
+  }
+  .card-inner{padding-left:10px;}
+
+  label{display:block;font-size:12px;color:var(--sumi-soft);margin:14px 0 5px;letter-spacing:0.05em;}
+  label:first-of-type{margin-top:0;}
+  input[type=text], input[type=date], textarea, select{
+    width:100%;padding:10px 10px;border:1px solid var(--line);border-radius:2px;
+    background:#fff;font-family:inherit;font-size:15px;color:var(--sumi);
+  }
+  textarea{resize:vertical;min-height:60px;}
+  .genre-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .genre-chip{
+    padding:8px 14px;border:1px solid var(--line);border-radius:20px;font-size:13px;
+    cursor:pointer;background:#fff;color:var(--sumi-soft);transition:.15s;
+  }
+  .genre-chip.sel{background:var(--ai);border-color:var(--ai);color:#fff;}
+
+  .axis-row{margin:14px 0;}
+  .axis-name{font-size:13px;color:var(--sumi);margin-bottom:6px;display:flex;justify-content:space-between;}
+  .axis-name .val{color:var(--hanko);font-weight:700;font-family:'Shippori Mincho',serif;}
+  input[type=range]{width:100%;accent-color:var(--ai);}
+
+  .photo-box{
+    border:1.5px dashed var(--line);border-radius:2px;padding:14px;text-align:center;
+    color:var(--sumi-soft);font-size:13px;cursor:pointer;background:rgba(255,255,255,0.4);
+  }
+  .photo-box img{max-width:100%;max-height:160px;display:block;margin:0 auto 8px;border-radius:2px;}
+
+  .tag-input-row{display:flex;gap:6px;}
+  .tag-input-row input{flex:1;}
+  .btn-mini{
+    padding:0 14px;border:1px solid var(--ai);background:#fff;color:var(--ai);
+    border-radius:2px;font-size:13px;cursor:pointer;
+  }
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+  .tag{
+    font-size:11px;background:var(--moss);color:#fff;padding:3px 10px;border-radius:12px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .tag span.x{cursor:pointer;opacity:0.8;}
+
+  .toggle-row{display:flex;align-items:center;gap:10px;margin-top:16px;}
+  .toggle{
+    width:42px;height:24px;border-radius:12px;background:var(--line);position:relative;cursor:pointer;
+    transition:.15s;flex-shrink:0;
+  }
+  .toggle.on{background:var(--hanko);}
+  .toggle .dot{
+    width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;
+    transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,0.3);
+  }
+  .toggle.on .dot{left:21px;}
+  .toggle-label{font-size:13px;color:var(--sumi-soft);}
+
+  button.primary{
+    width:100%;padding:14px;margin-top:20px;background:var(--ai);color:#fff;border:none;
+    border-radius:2px;font-size:15px;font-family:'Shippori Mincho',serif;font-weight:700;
+    letter-spacing:0.1em;cursor:pointer;
+  }
+  button.primary:active{background:var(--ai-deep);}
+  button.ghost{
+    width:100%;padding:11px;margin-top:8px;background:transparent;color:var(--sumi-soft);
+    border:1px solid var(--line);border-radius:2px;font-size:13px;cursor:pointer;
+  }
+
+  .entry-card{background:#fff;border:1px solid var(--line);border-radius:2px;margin-bottom:12px;overflow:hidden;}
+  .entry-top{display:flex;gap:12px;padding:14px;}
+  .entry-photo{width:64px;height:64px;object-fit:cover;border-radius:2px;flex-shrink:0;background:var(--washi-deep);}
+  .entry-info{flex:1;min-width:0;}
+  .entry-genre{font-size:10px;color:var(--ai);letter-spacing:0.1em;}
+  .entry-name{font-family:'Shippori Mincho',serif;font-weight:700;font-size:16px;margin:2px 0;}
+  .entry-date{font-size:11px;color:var(--sumi-soft);}
+  .entry-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
+  .entry-tags .tag{background:transparent;border:1px solid var(--moss);color:var(--moss);}
+  .entry-axes{padding:0 14px 14px;display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;}
+  .entry-axis{font-size:12px;color:var(--sumi-soft);display:flex;justify-content:space-between;border-bottom:1px dotted var(--line);padding-bottom:2px;}
+  .entry-axis b{color:var(--sumi);font-family:'Shippori Mincho',serif;}
+  .entry-comment{padding:0 14px 14px;font-size:13px;color:var(--sumi-soft);line-height:1.5;}
+  .entry-pub{padding:8px 14px;background:var(--washi-deep);font-size:11px;color:var(--sumi-soft);display:flex;justify-content:space-between;align-items:center;}
+  .pub-badge{color:var(--hanko);}
+
+  .search-bar{display:flex;gap:8px;margin-bottom:12px;}
+  .filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+  .filter-chip{
+    padding:5px 12px;border:1px solid var(--line);border-radius:14px;font-size:12px;
+    cursor:pointer;background:#fff;color:var(--sumi-soft);
+  }
+  .filter-chip.sel{background:var(--sumi);border-color:var(--sumi);color:#fff;}
+
+  .empty{text-align:center;padding:50px 20px;color:var(--sumi-soft);font-size:13px;}
+  .empty .mark{font-size:34px;display:block;margin-bottom:10px;opacity:0.5;}
+
+  nav.tabbar{
+    position:fixed;bottom:0;left:0;right:0;background:rgba(241,236,221,0.96);
+    backdrop-filter:blur(6px);border-top:1px solid var(--line);
+    display:flex;padding:6px 0 calc(6px + env(safe-area-inset-bottom));z-index:10;
+  }
+  nav.tabbar button{
+    flex:1;background:none;border:none;font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:11px;color:var(--sumi-soft);padding:8px 0 4px;cursor:pointer;
+  }
+  nav.tabbar button .ic{display:block;font-size:18px;margin-bottom:2px;}
+  nav.tabbar button.active{color:var(--hanko);}
+
+  .genre-card{background:#fff;border:1px solid var(--line);padding:14px;margin-bottom:10px;border-radius:2px;}
+  .genre-card h3{font-family:'Shippori Mincho',serif;margin:0 0 8px;font-size:16px;}
+  .axis-chip-list{display:flex;flex-wrap:wrap;gap:6px;}
+  .axis-chip{
+    font-size:12px;background:var(--washi-deep);padding:4px 10px;border-radius:12px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .axis-chip span.x{cursor:pointer;color:var(--hanko);}
+  .del-genre{font-size:11px;color:var(--hanko);cursor:pointer;float:right;}
+
+  .toast{
+    position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+    background:var(--sumi);color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;
+    opacity:0;transition:.25s;pointer-events:none;z-index:20;
+  }
+  .toast.show{opacity:0.95;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>味帖</h1>
+      <div class="sub">AJICHO — TASTING NOTES</div>
+    </div>
+    <div class="stamp" id="statStamp"><div class="num">-</div><div class="lbl">記録</div></div>
+  </header>
+
+  <!-- 記録する -->
+  <section id="tab-add" class="active">
+    <div class="card"><div class="card-inner">
+      <label>ジャンル</label>
+      <div class="genre-row" id="genreSelectRow"></div>
+
+      <label>店名・銘柄</label>
+      <input type="text" id="inpStore" placeholder="例）永坂更科 布屋太兵衛">
+
+      <label>日付</label>
+      <input type="date" id="inpDate">
+
+      <label>写真</label>
+      <div class="photo-box" id="photoBox">タップして写真を選ぶ</div>
+      <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none">
+
+      <div id="axesArea"></div>
+
+      <label>タグ</label>
+      <div class="tag-input-row">
+        <input type="text" id="inpTag" placeholder="例）十割そば、限定">
+        <button class="btn-mini" id="addTagBtn">追加</button>
+      </div>
+      <div class="tags" id="tagList"></div>
+
+      <label>メモ</label>
+      <textarea id="inpComment" placeholder="感じたことを自由に"></textarea>
+
+      <div class="toggle-row">
+        <div class="toggle" id="pubToggle"><div class="dot"></div></div>
+        <div class="toggle-label" id="pubLabel">非公開（自分だけに記録）</div>
+      </div>
+
+      <button class="primary" id="saveBtn">記録する</button>
+    </div></div>
+  </section>
+
+  <!-- 一覧・検索 -->
+  <section id="tab-list">
+    <div class="search-bar">
+      <input type="text" id="searchInp" placeholder="店名・タグ・メモで検索">
+    </div>
+    <div class="filter-row" id="genreFilterRow"></div>
+    <div id="listArea"></div>
+  </section>
+
+  <!-- 公開一覧 -->
+  <section id="tab-public">
+    <div class="filter-row" id="pubGenreFilterRow"></div>
+    <div id="publicArea"></div>
+  </section>
+
+  <!-- ジャンル管理 -->
+  <section id="tab-genre">
+    <div class="card"><div class="card-inner">
+      <label>新しいジャンル名</label>
+      <input type="text" id="newGenreName" placeholder="例）クラフトビール">
+      <label>評価軸（カンマ区切りで複数可）</label>
+      <input type="text" id="newGenreAxes" placeholder="例）コシ,出汁,蕎麦感,天ぷら,蕎麦湯">
+      <button class="primary" id="addGenreBtn">ジャンルを追加</button>
+    </div></div>
+    <div id="genreManageArea"></div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<nav class="tabbar">
+  <button data-tab="tab-add" class="active"><span class="ic">✎</span>記録</button>
+  <button data-tab="tab-list"><span class="ic">☰</span>一覧</button>
+  <button data-tab="tab-public"><span class="ic">◎</span>公開</button>
+  <button data-tab="tab-genre"><span class="ic">印</span>ジャンル</button>
+</nav>
+
+<script>
+const DEFAULT_GENRES = [
+  {id:'soba', name:'蕎麦', axes:['コシ','出汁','蕎麦感','天ぷら','蕎麦湯']},
+  {id:'beer', name:'ビール', axes:['苦味','香り','キレ','コク','喉ごし']},
+  {id:'sake', name:'日本酒', axes:['甘辛','香り','コク','キレ','後味']},
+];
+
+let genres = [];
+let entries = [];
+let selectedGenreId = null;
+let currentTags = [];
+let currentPhoto = null;
+let isPublic = false;
+let listFilterGenre = null;
+let pubFilterGenre = null;
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1600);
+}
+
+async function loadAll(){
+  try{
+    const g = await window.storage.get('genres');
+    genres = g ? JSON.parse(g.value) : DEFAULT_GENRES.slice();
+  }catch(e){ genres = DEFAULT_GENRES.slice(); }
+  if(!genres.length) genres = DEFAULT_GENRES.slice();
+  try{
+    const e = await window.storage.get('entries');
+    entries = e ? JSON.parse(e.value) : [];
+  }catch(e){ entries = []; }
+  selectedGenreId = genres[0] ? genres[0].id : null;
+  renderGenreSelect();
+  renderAxes();
+  renderGenreFilters();
+  renderList();
+  renderGenreManage();
+  updateStamp();
+  document.getElementById('inpDate').value = new Date().toISOString().slice(0,10);
+}
+
+async function saveGenres(){
+  let ver = 'new';
+  try{ const cur = await window.storage.get('genres'); if(cur) ver = cur.version || 'new'; }catch(e){}
+  try{
+    const r = await window.storage.set('genres', JSON.stringify(genres));
+  }catch(e){ console.error(e); }
+}
+async function saveEntries(){
+  try{
+    await window.storage.set('entries', JSON.stringify(entries));
+  }catch(e){ console.error(e); showToast('保存に失敗しました'); }
+}
+
+function updateStamp(){
+  document.getElementById('statStamp').querySelector('.num').textContent = entries.length;
+}
+
+function renderGenreSelect(){
+  const row = document.getElementById('genreSelectRow');
+  row.innerHTML = '';
+  genres.forEach(g=>{
+    const chip = document.createElement('div');
+    chip.className = 'genre-chip' + (g.id===selectedGenreId ? ' sel' : '');
+    chip.textContent = g.name;
+    chip.onclick = ()=>{ selectedGenreId = g.id; renderGenreSelect(); renderAxes(); };
+    row.appendChild(chip);
+  });
+}
+
+let axisValues = {};
+function renderAxes(){
+  const area = document.getElementById('axesArea');
+  area.innerHTML = '';
+  const genre = genres.find(g=>g.id===selectedGenreId);
+  axisValues = {};
+  if(!genre) return;
+  genre.axes.forEach(axis=>{
+    axisValues[axis] = 3;
+    const row = document.createElement('div');
+    row.className = 'axis-row';
+    row.innerHTML = `
+      <div class="axis-name"><span>${axis}</span><span class="val" id="val-${axis}">3</span></div>
+      <input type="range" min="1" max="5" step="1" value="3" data-axis="${axis}">
+    `;
+    area.appendChild(row);
+  });
+  area.querySelectorAll('input[type=range]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      axisValues[inp.dataset.axis] = Number(inp.value);
+      document.getElementById('val-'+inp.dataset.axis).textContent = inp.value;
+    });
+  });
+}
+
+document.getElementById('photoBox').addEventListener('click', ()=>document.getElementById('photoInput').click());
+document.getElementById('photoInput').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const maxW = 700;
+      const scale = Math.min(1, maxW / img.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      currentPhoto = canvas.toDataURL('image/jpeg', 0.6);
+      const box = document.getElementById('photoBox');
+      box.innerHTML = `<img src="${currentPhoto}"><div>変更する</div>`;
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('addTagBtn').addEventListener('click', addTagFromInput);
+document.getElementById('inpTag').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); addTagFromInput(); }});
+function addTagFromInput(){
+  const inp = document.getElementById('inpTag');
+  const v = inp.value.trim();
+  if(!v) return;
+  if(!currentTags.includes(v)) currentTags.push(v);
+  inp.value = '';
+  renderTagList();
+}
+function renderTagList(){
+  const el = document.getElementById('tagList');
+  el.innerHTML = '';
+  currentTags.forEach(t=>{
+    const tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.innerHTML = `${t} <span class="x">×</span>`;
+    tag.querySelector('.x').onclick = ()=>{ currentTags = currentTags.filter(x=>x!==t); renderTagList(); };
+    el.appendChild(tag);
+  });
+}
+
+document.getElementById('pubToggle').addEventListener('click', ()=>{
+  isPublic = !isPublic;
+  const tg = document.getElementById('pubToggle');
+  tg.classList.toggle('on', isPublic);
+  document.getElementById('pubLabel').textContent = isPublic ? '公開（みんなに見える一覧に載る）' : '非公開（自分だけに記録）';
+});
+
+document.getElementById('saveBtn').addEventListener('click', async ()=>{
+  const genre = genres.find(g=>g.id===selectedGenreId);
+  const store = document.getElementById('inpStore').value.trim();
+  if(!genre){ showToast('ジャンルを選んでください'); return; }
+  if(!store){ showToast('店名・銘柄を入力してください'); return; }
+  const entry = {
+    id: uid(),
+    genreId: genre.id,
+    genreName: genre.name,
+    storeName: store,
+    date: document.getElementById('inpDate').value,
+    photo: currentPhoto,
+    scores: {...axisValues},
+    tags: [...currentTags],
+    comment: document.getElementById('inpComment').value.trim(),
+    isPublic
+  };
+  entries.unshift(entry);
+  await saveEntries();
+  if(entry.isPublic){
+    try{ await window.storage.set('public:'+entry.id, JSON.stringify(entry), true); }catch(e){ console.error(e); }
+  }
+  updateStamp();
+  renderList();
+  renderGenreFilters();
+  resetForm();
+  showToast('記録しました');
+});
+
+function resetForm(){
+  document.getElementById('inpStore').value = '';
+  document.getElementById('inpComment').value = '';
+  document.getElementById('inpDate').value = new Date().toISOString().slice(0,10);
+  currentTags = [];
+  currentPhoto = null;
+  isPublic = false;
+  document.getElementById('pubToggle').classList.remove('on');
+  document.getElementById('pubLabel').textContent = '非公開（自分だけに記録）';
+  document.getElementById('photoBox').innerHTML = 'タップして写真を選ぶ';
+  renderTagList();
+  renderAxes();
+}
+
+function renderGenreFilters(){
+  const row = document.getElementById('genreFilterRow');
+  const prow = document.getElementById('pubGenreFilterRow');
+  row.innerHTML = ''; prow.innerHTML = '';
+  const all1 = document.createElement('div');
+  all1.className = 'filter-chip' + (listFilterGenre===null?' sel':'');
+  all1.textContent = 'すべて';
+  all1.onclick = ()=>{ listFilterGenre=null; renderGenreFilters(); renderList(); };
+  row.appendChild(all1);
+  const all2 = document.createElement('div');
+  all2.className = 'filter-chip' + (pubFilterGenre===null?' sel':'');
+  all2.textContent = 'すべて';
+  all2.onclick = ()=>{ pubFilterGenre=null; renderGenreFilters(); renderPublic(); };
+  prow.appendChild(all2);
+  genres.forEach(g=>{
+    const c1 = document.createElement('div');
+    c1.className = 'filter-chip' + (listFilterGenre===g.id?' sel':'');
+    c1.textContent = g.name;
+    c1.onclick = ()=>{ listFilterGenre=g.id; renderGenreFilters(); renderList(); };
+    row.appendChild(c1);
+    const c2 = document.createElement('div');
+    c2.className = 'filter-chip' + (pubFilterGenre===g.id?' sel':'');
+    c2.textContent = g.name;
+    c2.onclick = ()=>{ pubFilterGenre=g.id; renderGenreFilters(); renderPublic(); };
+    prow.appendChild(c2);
+  });
+}
+
+function entryCard(entry, showPubBar){
+  const div = document.createElement('div');
+  div.className = 'entry-card';
+  const axesHtml = Object.entries(entry.scores||{}).map(([k,v])=>`<div class="entry-axis">${k} <b>${v}</b></div>`).join('');
+  const tagsHtml = (entry.tags||[]).map(t=>`<div class="tag">${t}</div>`).join('');
+  div.innerHTML = `
+    <div class="entry-top">
+      ${entry.photo ? `<img class="entry-photo" src="${entry.photo}">` : `<div class="entry-photo"></div>`}
+      <div class="entry-info">
+        <div class="entry-genre">${entry.genreName}</div>
+        <div class="entry-name">${entry.storeName}</div>
+        <div class="entry-date">${entry.date}</div>
+        <div class="entry-tags">${tagsHtml}</div>
+      </div>
+    </div>
+    <div class="entry-axes">${axesHtml}</div>
+    ${entry.comment ? `<div class="entry-comment">${entry.comment}</div>` : ''}
+    ${showPubBar ? `<div class="entry-pub"><span>${entry.isPublic ? '<span class="pub-badge">◎ 公開中</span>' : '非公開'}</span></div>` : ''}
+  `;
+  return div;
+}
+
+function renderList(){
+  const area = document.getElementById('listArea');
+  const q = (document.getElementById('searchInp').value||'').trim().toLowerCase();
+  let list = entries.filter(e=>{
+    if(listFilterGenre && e.genreId!==listFilterGenre) return false;
+    if(q){
+      const hay = [e.storeName, e.comment, ...(e.tags||[])].join(' ').toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  area.innerHTML = '';
+  if(!list.length){
+    area.innerHTML = `<div class="empty"><span class="mark">巻</span>まだ記録がありません</div>`;
+    return;
+  }
+  list.forEach(e=>area.appendChild(entryCard(e, true)));
+}
+document.getElementById('searchInp').addEventListener('input', renderList);
+
+async function renderPublic(){
+  const area = document.getElementById('publicArea');
+  area.innerHTML = `<div class="empty">読み込み中...</div>`;
+  try{
+    const listRes = await window.storage.list('public:', true);
+    const keys = listRes ? listRes.keys : [];
+    const items = [];
+    for(const k of keys){
+      try{
+        const r = await window.storage.get(k, true);
+        if(r) items.push(JSON.parse(r.value));
+      }catch(e){}
+    }
+    items.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+    const filtered = pubFilterGenre ? items.filter(i=>i.genreId===pubFilterGenre) : items;
+    area.innerHTML = '';
+    if(!filtered.length){
+      area.innerHTML = `<div class="empty"><span class="mark">◎</span>公開された記録はまだありません</div>`;
+      return;
+    }
+    filtered.forEach(e=>area.appendChild(entryCard(e, false)));
+  }catch(e){
+    area.innerHTML = `<div class="empty">読み込みに失敗しました</div>`;
+  }
+}
+
+function renderGenreManage(){
+  const area = document.getElementById('genreManageArea');
+  area.innerHTML = '';
+  genres.forEach(g=>{
+    const card = document.createElement('div');
+    card.className = 'genre-card';
+    card.innerHTML = `
+      <span class="del-genre">削除</span>
+      <h3>${g.name}</h3>
+      <div class="axis-chip-list">
+        ${g.axes.map(a=>`<div class="axis-chip">${a} <span class="x" data-axis="${a}">×</span></div>`).join('')}
+      </div>
+    `;
+    card.querySelector('.del-genre').onclick = async ()=>{
+      if(!confirm(`「${g.name}」を削除しますか？`)) return;
+      genres = genres.filter(x=>x.id!==g.id);
+      await saveGenres();
+      if(selectedGenreId===g.id) selectedGenreId = genres[0] ? genres[0].id : null;
+      renderGenreSelect(); renderAxes(); renderGenreFilters(); renderGenreManage();
+    };
+    card.querySelectorAll('.axis-chip .x').forEach(x=>{
+      x.onclick = async ()=>{
+        g.axes = g.axes.filter(a=>a!==x.dataset.axis);
+        await saveGenres();
+        renderAxes(); renderGenreManage();
+      };
+    });
+    area.appendChild(card);
+  });
+}
+
+document.getElementById('addGenreBtn').addEventListener('click', async ()=>{
+  const name = document.getElementById('newGenreName').value.trim();
+  const axesRaw = document.getElementById('newGenreAxes').value.trim();
+  if(!name || !axesRaw){ showToast('ジャンル名と評価軸を入力してください'); return; }
+  const axes = axesRaw.split(',').map(s=>s.trim()).filter(Boolean);
+  if(!axes.length){ showToast('評価軸を入力してください'); return; }
+  genres.push({id: uid(), name, axes});
+  await saveGenres();
+  document.getElementById('newGenreName').value = '';
+  document.getElementById('newGenreAxes').value = '';
+  renderGenreSelect(); renderAxes(); renderGenreFilters(); renderGenreManage();
+  showToast('ジャンルを追加しました');
+});
+
+document.querySelectorAll('nav.tabbar button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabbar button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab==='tab-public') renderPublic();
+  });
+});
+
+loadAll();
+</script>
+</body>
+</html>
