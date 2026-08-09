@@ -13,6 +13,7 @@ dist-ssr/
 # editor / OS
 .vscode/*
 !.vscode/extensions.json
+.idea
 .DS_Store
 Thumbs.db
 
