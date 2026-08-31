@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" font-family="sans-serif">
+  <defs>
+    <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+  </defs>
+  <rect width="900" height="420" fill="#ffffff"/>
+  <text x="450" y="30" text-anchor="middle" font-size="18" font-weight="bold">動作確認結果: useAuth().user による画面分岐</text>
+
+  <!-- state: not logged in -->
+  <rect x="60" y="70" width="330" height="180" rx="10" fill="#fff5f5" stroke="#e03131" stroke-width="1.5"/>
+  <text x="225" y="100" text-anchor="middle" font-size="14" font-weight="bold">未ログイン状態</text>
+  <text x="225" y="125" text-anchor="middle" font-size="12">user === null</text>
+  <rect x="90" y="145" width="270" height="80" rx="6" fill="#ffffff" stroke="#adb5bd"/>
+  <text x="225" y="170" text-anchor="middle" font-size="12" font-weight="bold">LoginPage</text>
+  <text x="225" y="190" text-anchor="middle" font-size="11">[ログイン] [新規登録] タブ</text>
+  <text x="225" y="207" text-anchor="middle" font-size="11">メール・パスワード入力フォーム</text>
+
+  <!-- state: logged in -->
+  <rect x="510" y="70" width="330" height="180" rx="10" fill="#ebfbee" stroke="#2f9e44" stroke-width="1.5"/>
+  <text x="675" y="100" text-anchor="middle" font-size="14" font-weight="bold">ログイン済み状態</text>
+  <text x="675" y="125" text-anchor="middle" font-size="12">user.email が取得できる</text>
+  <rect x="540" y="145" width="270" height="80" rx="6" fill="#ffffff" stroke="#adb5bd"/>
+  <text x="675" y="168" text-anchor="middle" font-size="12" font-weight="bold">HomePage</text>
+  <text x="675" y="188" text-anchor="middle" font-size="11">"mittsu.3216@docomo.ne.jp</text>
+  <text x="675" y="204" text-anchor="middle" font-size="11">としてログイン中です" + ログアウト</text>
+
+  <path d="M390,140 C 440,110 460,110 508,140" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow2)"/>
+  <text x="450" y="100" text-anchor="middle" font-size="11">ログイン成功</text>
+
+  <path d="M508,190 C 460,220 440,220 390,190" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow2)"/>
+  <text x="450" y="240" text-anchor="middle" font-size="11">ログアウト</text>
+
+  <text x="450" y="290" text-anchor="middle" font-size="12" font-weight="bold">確認できたこと</text>
+  <text x="450" y="315" text-anchor="middle" font-size="12">実際にSupabaseプロジェクト(kxsustnjsiqijqzzkxts)へsignUp/signInWithPasswordのAPI呼び出しが成功し、</text>
+  <text x="450" y="335" text-anchor="middle" font-size="12">セッションが発行され、AuthContext経由でHomePageの表示が正しく切り替わることを確認した。</text>
+  <text x="450" y="360" text-anchor="middle" font-size="12" fill="#555">(確認メールの転送先が開発中のlocalhostだったため、初回はスマホから確認できずemail_confirmed_atが</text>
+  <text x="450" y="378" text-anchor="middle" font-size="12" fill="#555">nullのままだった。開発中は「Confirm email」をOFFにする運用に切り替えて解決した)</text>
+</svg>
