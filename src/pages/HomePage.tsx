@@ -1,20 +1,8 @@
-import { Navigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 function HomePage() {
-  const { user, loading, signOut } = useAuth()
-
-  if (loading) {
-    return (
-      <main className="mx-auto max-w-xl px-4 py-10">
-        <p className="text-sm text-neutral-500">読み込み中...</p>
-      </main>
-    )
-  }
-
-  if (!user) {
-    return <Navigate to="/login" replace />
-  }
+  const { user, signOut } = useAuth()
 
   return (
     <main className="mx-auto max-w-xl px-4 py-10">
@@ -29,8 +17,13 @@ function HomePage() {
         </button>
       </div>
       <p className="mt-2 text-sm text-neutral-600">
-        {user.email} としてログイン中です。自分だけの評価軸で、あらゆるものを記録するアプリ。準備中です。
+        {user?.email} としてログイン中です。自分だけの評価軸で、あらゆるものを記録するアプリ。準備中です。
       </p>
+      <nav className="mt-6">
+        <Link to="/genres" className="text-sm text-blue-600 underline">
+          ジャンルを管理する
+        </Link>
+      </nav>
     </main>
   )
 }
