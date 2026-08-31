@@ -1,3 +1,21 @@
+---
+title: "supabase_schema 説明書"
+type: knowledge
+project: "Ratefolio"
+created: "2026-08-09"
+updated: "2026-09-01"
+version: "v1.0"
+tags:
+  - type/knowledge
+  - "project/Ratefolio"
+  - tech/supabase
+  - tech/postgresql
+related:
+  - "[[supabase_schema_report]]"
+aliases:
+  - "supabase_schema"
+---
+
 # supabase_schema 説明書
 
 > 対象コード: `supabase/migrations/0001_init.sql`

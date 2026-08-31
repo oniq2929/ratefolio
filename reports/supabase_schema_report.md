@@ -1,3 +1,21 @@
+---
+title: "supabase_schema 報告書"
+type: report
+project: "Ratefolio"
+created: "2026-08-09"
+updated: "2026-09-01"
+version: "v1.1"
+tags:
+  - type/report
+  - "project/Ratefolio"
+  - tech/supabase
+  - tech/postgresql
+related:
+  - "[[supabase_schema_knowledge]]"
+aliases:
+  - "supabase_schema"
+---
+
 # supabase_schema 報告書
 
 | 項目 | 内容 |
@@ -5,12 +23,13 @@
 | 作成日 | 2026-08-09 |
 | 対象コード | `supabase/migrations/0001_init.sql` |
 | 作成者 | Claude Code |
-| 版数 | v1.0 |
+| 版数 | v1.1 |
 
 ## 改訂履歴
 | 版 | 日付 | 変更内容 |
 |---|---|---|
 | v1.0 | 2026-08-09 | 初版作成 |
+| v1.1 | 2026-09-01 | Obsidian用YAMLフロントマターを追加 |
 
 ---
 
