@@ -10,8 +10,36 @@
       書き出し、![説明](figures/xxx.png) の形で参照する
       （Word変換時に確実に埋め込むため）。
 出力先: reports/{作成コード名}_report.md
+
+【YAMLフロントマター】
+Obsidianでの整理・グラフ表示・Dataviewクエリのために、本文冒頭に
+以下のYAMLフロントマターを必ず付与すること。
+- type は report 固定
+- project はツール名（C:\claude_dev\{ツール名}\ のツール名と一致させる）
+- tags には "type/report" と "project/{ツール名}" を最低限含める
+  （関連する技術要素があれば "tech/xxx" も追加してよい）
+- related には対応する knowledge ノートへの [[wikilink]] を必ず1つ以上含める
+  （knowledge側にも相互にリンクを張ること）
+- version はYAML側にも記載し、本文の改訂履歴表と値を一致させること
+- created は初版作成日から変更しない。updated は更新の都度上書きする
 ====================================================================
 -->
+
+---
+title: "{作成コード名} 報告書"
+type: report
+project: "{ツール名}"
+created: "{YYYY-MM-DD}"
+updated: "{YYYY-MM-DD}"
+version: "v1.0"
+tags:
+  - type/report
+  - "project/{ツール名}"
+related:
+  - "[[{作成コード名}_knowledge]]"
+aliases:
+  - "{作成コード名}"
+---
 
 # {作成コード名} 報告書
 

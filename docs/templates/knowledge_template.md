@@ -5,8 +5,35 @@
 参照するテンプレートです。以下の [ ] で囲まれた指示に従い、
 実際のコードに即した内容で本文を埋めてください。
 出力先: knowledge/{作成コード名}_knowledge.md
+
+【YAMLフロントマター】
+Obsidianでの整理・グラフ表示・Dataviewクエリのために、本文冒頭に
+以下のYAMLフロントマターを必ず付与すること。
+- type は knowledge 固定
+- project はツール名（C:\claude_dev\{ツール名}\ のツール名と一致させる）
+- tags には "type/knowledge" と "project/{ツール名}" を最低限含める
+  （関連する技術要素があれば "tech/xxx" も追加してよい）
+- related には対応する report ノートへの [[wikilink]] を必ず1つ以上含める
+  （report_knowledge.md 側にも相互にリンクを張ること）
+- created は初版作成日から変更しない。updated は更新の都度上書きする
 ====================================================================
 -->
+
+---
+title: "{作成コード名} 説明書"
+type: knowledge
+project: "{ツール名}"
+created: "{YYYY-MM-DD}"
+updated: "{YYYY-MM-DD}"
+version: "v1.0"
+tags:
+  - type/knowledge
+  - "project/{ツール名}"
+related:
+  - "[[{作成コード名}_report]]"
+aliases:
+  - "{作成コード名}"
+---
 
 # {作成コード名} 説明書
 
