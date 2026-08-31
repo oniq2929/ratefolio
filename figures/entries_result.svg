@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" font-family="sans-serif">
+  <rect width="900" height="460" fill="#ffffff"/>
+  <text x="450" y="30" text-anchor="middle" font-size="16" font-weight="bold">動作確認: レーダーチャートのラベル欠け(不具合)と修正</text>
+
+  <!-- before -->
+  <rect x="60" y="60" width="360" height="330" rx="8" fill="#fff5f5" stroke="#e03131"/>
+  <text x="240" y="90" text-anchor="middle" font-size="13" font-weight="bold">修正前: svgの初期状態(overflow: hidden)</text>
+  <circle cx="240" cy="230" r="90" fill="none" stroke="#d0d7de"/>
+  <polygon points="240,140 322,193 291,285 189,285 158,193" fill="#4c6ef5" fill-opacity="0.3" stroke="#4c6ef5"/>
+  <text x="240" y="120" text-anchor="middle" font-size="11">香り(2)</text>
+  <text x="345" y="185" text-anchor="start" font-size="11" fill="#adb5bd">こし</text>
+  <text x="380" y="185" text-anchor="start" font-size="11" fill="#e03131" text-decoration="line-through">(2)</text>
+  <text x="300" y="300" text-anchor="start" font-size="11">天ぷら(2)</text>
+  <text x="180" y="300" text-anchor="end" font-size="11">出汁(4)</text>
+  <text x="135" y="185" text-anchor="end" font-size="11">量(2)</text>
+  <text x="240" y="360" text-anchor="middle" font-size="11" fill="#e03131">「(2)」がviewBoxの外側でクリップされ見えない</text>
+
+  <!-- after -->
+  <rect x="480" y="60" width="360" height="330" rx="8" fill="#ebfbee" stroke="#2f9e44"/>
+  <text x="660" y="90" text-anchor="middle" font-size="13" font-weight="bold">修正後: svg style={{overflow:'visible'}}</text>
+  <circle cx="660" cy="230" r="90" fill="none" stroke="#d0d7de"/>
+  <polygon points="660,140 742,193 711,285 609,285 578,193" fill="#4c6ef5" fill-opacity="0.3" stroke="#4c6ef5"/>
+  <text x="660" y="120" text-anchor="middle" font-size="11">香り(2)</text>
+  <text x="765" y="185" text-anchor="start" font-size="11">こし(2)</text>
+  <text x="720" y="300" text-anchor="start" font-size="11">天ぷら(2)</text>
+  <text x="600" y="300" text-anchor="end" font-size="11">出汁(4)</text>
+  <text x="555" y="185" text-anchor="end" font-size="11">量(2)</text>
+  <text x="660" y="360" text-anchor="middle" font-size="11" fill="#2f9e44">viewBoxの外までラベルが描画され、全軸の数値が見える</text>
+
+  <text x="450" y="430" text-anchor="middle" font-size="11" fill="#555">SVGルート要素は既定でoverflow: hiddenのため、viewBoxの外に出る文字はクリップされる。ラベル位置が</text>
+  <text x="450" y="448" text-anchor="middle" font-size="11" fill="#555">viewBox端に近い軸(このケースでは「こし」)だけ数値が欠けて見える、という形で顕在化した。</text>
+</svg>

@@ -1,0 +1,99 @@
+interface RadarChartAxis {
+  name: string
+  score: number
+}
+
+interface RadarChartProps {
+  axes: RadarChartAxis[]
+  scaleMax: number
+  size?: number
+}
+
+// 目盛りとして薄く表示する同心多角形の、外周に対する半径の割合
+const GRID_RING_RATIOS = [1 / 3, 2 / 3, 1]
+
+function RadarChart({ axes, scaleMax, size = 260 }: RadarChartProps) {
+  const center = size / 2
+  const maxRadius = center - 36
+
+  const angleForIndex = (index: number) =>
+    -Math.PI / 2 + (index * 2 * Math.PI) / axes.length
+
+  const pointAt = (radius: number, index: number) => {
+    const angle = angleForIndex(index)
+    return {
+      x: center + radius * Math.cos(angle),
+      y: center + radius * Math.sin(angle),
+    }
+  }
+
+  const toPointsAttr = (points: { x: number; y: number }[]) =>
+    points.map((p) => `${p.x},${p.y}`).join(' ')
+
+  const dataPoints = axes.map((axis, i) =>
+    pointAt((Math.max(0, axis.score) / scaleMax) * maxRadius, i),
+  )
+
+  return (
+    <svg
+      viewBox={`0 0 ${size} ${size}`}
+      width={size}
+      height={size}
+      style={{ overflow: 'visible' }}
+    >
+      {GRID_RING_RATIOS.map((ratio) => (
+        <polygon
+          key={ratio}
+          points={toPointsAttr(axes.map((_, i) => pointAt(maxRadius * ratio, i)))}
+          fill="none"
+          stroke="#d0d7de"
+          strokeWidth={1}
+        />
+      ))}
+
+      {axes.map((axis, i) => {
+        const outer = pointAt(maxRadius, i)
+        return (
+          <line
+            key={axis.name}
+            x1={center}
+            y1={center}
+            x2={outer.x}
+            y2={outer.y}
+            stroke="#d0d7de"
+            strokeWidth={1}
+          />
+        )
+      })}
+
+      <polygon
+        points={toPointsAttr(dataPoints)}
+        fill="#4c6ef5"
+        fillOpacity={0.35}
+        stroke="#4c6ef5"
+        strokeWidth={2}
+      />
+
+      {axes.map((axis, i) => {
+        const label = pointAt(maxRadius + 16, i)
+        const cos = Math.cos(angleForIndex(i))
+        const anchor = cos > 0.3 ? 'start' : cos < -0.3 ? 'end' : 'middle'
+        return (
+          <text
+            key={axis.name}
+            x={label.x}
+            y={label.y}
+            textAnchor={anchor}
+            dominantBaseline="middle"
+            fontSize={11}
+            fill="#495057"
+          >
+            {axis.name}({axis.score})
+          </text>
+        )
+      })}
+    </svg>
+  )
+}
+
+export default RadarChart

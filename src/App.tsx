@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import GenresPage from './pages/GenresPage'
 import NewGenrePage from './pages/NewGenrePage'
+import NewEntryPage from './pages/NewEntryPage'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/genres" element={<GenresPage />} />
             <Route path="/genres/new" element={<NewGenrePage />} />
+            <Route path="/entries/new" element={<NewEntryPage />} />
           </Route>
         </Routes>
       </AuthProvider>

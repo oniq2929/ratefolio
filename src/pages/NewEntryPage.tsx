@@ -1,0 +1,319 @@
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../contexts/AuthContext'
+import RadarChart from '../components/RadarChart'
+import type { Axis, Genre } from '../types/database'
+
+type GenreWithAxes = Genre & { axes: Axis[] }
+
+function todayIsoDate() {
+  return new Date().toISOString().slice(0, 10)
+}
+
+function defaultScoreFor(scaleMax: number) {
+  return Math.ceil((scaleMax + 1) / 2)
+}
+
+interface CreatedEntryPreview {
+  targetName: string
+  scaleMax: number
+  axes: { name: string; score: number }[]
+}
+
+function NewEntryPage() {
+  const { user } = useAuth()
+
+  const [genres, setGenres] = useState<GenreWithAxes[]>([])
+  const [loadingGenres, setLoadingGenres] = useState(true)
+  const [selectedGenreId, setSelectedGenreId] = useState<string>('')
+  const [targetName, setTargetName] = useState('')
+  const [entryDate, setEntryDate] = useState(todayIsoDate())
+  const [scores, setScores] = useState<Record<string, number>>({})
+  const [tagsInput, setTagsInput] = useState('')
+  const [comment, setComment] = useState('')
+  const [isPublic, setIsPublic] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [createdEntry, setCreatedEntry] = useState<CreatedEntryPreview | null>(
+    null,
+  )
+
+  useEffect(() => {
+    supabase
+      .from('genres')
+      .select('*, axes(*)')
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          setErrorMessage(error.message)
+        } else {
+          setGenres((data ?? []) as GenreWithAxes[])
+        }
+        setLoadingGenres(false)
+      })
+  }, [])
+
+  const selectedGenre = useMemo(
+    () => genres.find((g) => g.id === selectedGenreId) ?? null,
+    [genres, selectedGenreId],
+  )
+
+  const sortedAxes = useMemo(
+    () =>
+      selectedGenre
+        ? [...selectedGenre.axes].sort((a, b) => a.sort_order - b.sort_order)
+        : [],
+    [selectedGenre],
+  )
+
+  const handleSelectGenre = (genreId: string) => {
+    setSelectedGenreId(genreId)
+    const genre = genres.find((g) => g.id === genreId)
+    if (!genre) return
+    const initialScores: Record<string, number> = {}
+    genre.axes.forEach((axis) => {
+      initialScores[axis.id] = defaultScoreFor(genre.scale_max)
+    })
+    setScores(initialScores)
+  }
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault()
+    setErrorMessage(null)
+
+    if (!user || !selectedGenre) return
+
+    const trimmedName = targetName.trim()
+    if (!trimmedName) {
+      setErrorMessage('対象名を入力してください。')
+      return
+    }
+
+    const tags = tagsInput
+      .split(',')
+      .map((tag) => tag.trim())
+      .filter(Boolean)
+
+    setSubmitting(true)
+
+    const { data: entry, error: entryError } = await supabase
+      .from('entries')
+      .insert({
+        owner_id: user.id,
+        genre_id: selectedGenre.id,
+        genre_name: selectedGenre.name,
+        scale_max: selectedGenre.scale_max,
+        target_name: trimmedName,
+        entry_date: entryDate,
+        comment: comment.trim() || null,
+        tags,
+        is_public: isPublic,
+        photo_path: null,
+      })
+      .select()
+      .single()
+
+    if (entryError || !entry) {
+      setErrorMessage(entryError?.message ?? '記録の作成に失敗しました。')
+      setSubmitting(false)
+      return
+    }
+
+    const { error: scoresError } = await supabase.from('entry_scores').insert(
+      sortedAxes.map((axis) => ({
+        entry_id: entry.id,
+        axis_id: axis.id,
+        axis_name: axis.name,
+        sort_order: axis.sort_order,
+        score: scores[axis.id],
+      })),
+    )
+
+    if (scoresError) {
+      // スコアの作成に失敗した場合、スコアのない記録だけが残らないよう後片付けする
+      await supabase.from('entries').delete().eq('id', entry.id)
+      setErrorMessage(scoresError.message)
+      setSubmitting(false)
+      return
+    }
+
+    setCreatedEntry({
+      targetName: trimmedName,
+      scaleMax: selectedGenre.scale_max,
+      axes: sortedAxes.map((axis) => ({
+        name: axis.name,
+        score: scores[axis.id] ?? defaultScoreFor(selectedGenre.scale_max),
+      })),
+    })
+    setTargetName('')
+    setTagsInput('')
+    setComment('')
+    setIsPublic(false)
+    handleSelectGenre(selectedGenre.id)
+    setSubmitting(false)
+  }
+
+  if (loadingGenres) {
+    return (
+      <main className="mx-auto max-w-xl px-4 py-10">
+        <p className="text-sm text-neutral-500">読み込み中...</p>
+      </main>
+    )
+  }
+
+  if (genres.length === 0) {
+    return (
+      <main className="mx-auto max-w-xl px-4 py-10">
+        <h1 className="text-2xl font-bold">記録を作成</h1>
+        <p className="mt-4 text-sm text-neutral-600">
+          記録を作るには、先にジャンルを作成してください。
+        </p>
+        <Link to="/genres/new" className="mt-2 inline-block text-sm text-blue-600 underline">
+          + 新しいジャンルを作成する
+        </Link>
+      </main>
+    )
+  }
+
+  return (
+    <main className="mx-auto max-w-xl px-4 py-10">
+      <h1 className="text-2xl font-bold">記録を作成</h1>
+
+      {createdEntry && (
+        <div className="mt-4 rounded border border-emerald-300 bg-emerald-50 p-4">
+          <p className="text-sm text-emerald-700">
+            「{createdEntry.targetName}」を記録しました。
+          </p>
+          <div className="mt-2 flex justify-center">
+            <RadarChart axes={createdEntry.axes} scaleMax={createdEntry.scaleMax} size={200} />
+          </div>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
+        <label className="flex flex-col gap-1 text-sm">
+          ジャンル
+          <select
+            required
+            value={selectedGenreId}
+            onChange={(e) => handleSelectGenre(e.target.value)}
+            className="rounded border border-neutral-300 px-3 py-2"
+          >
+            <option value="" disabled>
+              選択してください
+            </option>
+            {genres.map((genre) => (
+              <option key={genre.id} value={genre.id}>
+                {genre.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        {selectedGenre && (
+          <>
+            <label className="flex flex-col gap-1 text-sm">
+              対象名
+              <input
+                type="text"
+                required
+                value={targetName}
+                onChange={(e) => setTargetName(e.target.value)}
+                className="rounded border border-neutral-300 px-3 py-2"
+                placeholder="例: ○○そば店"
+              />
+            </label>
+
+            <label className="flex flex-col gap-1 text-sm">
+              日付
+              <input
+                type="date"
+                required
+                value={entryDate}
+                onChange={(e) => setEntryDate(e.target.value)}
+                className="rounded border border-neutral-300 px-3 py-2"
+              />
+            </label>
+
+            <div className="flex flex-col gap-3">
+              <span className="text-sm">評価</span>
+              {sortedAxes.map((axis) => (
+                <label key={axis.id} className="flex flex-col gap-1 text-sm">
+                  {axis.name}: {scores[axis.id] ?? defaultScoreFor(selectedGenre.scale_max)}
+                  <input
+                    type="range"
+                    min={1}
+                    max={selectedGenre.scale_max}
+                    step={1}
+                    value={scores[axis.id] ?? defaultScoreFor(selectedGenre.scale_max)}
+                    onChange={(e) =>
+                      setScores((prev) => ({
+                        ...prev,
+                        [axis.id]: Number(e.target.value),
+                      }))
+                    }
+                  />
+                </label>
+              ))}
+            </div>
+
+            <div className="flex justify-center">
+              <RadarChart
+                axes={sortedAxes.map((axis) => ({
+                  name: axis.name,
+                  score: scores[axis.id] ?? defaultScoreFor(selectedGenre.scale_max),
+                }))}
+                scaleMax={selectedGenre.scale_max}
+              />
+            </div>
+
+            <label className="flex flex-col gap-1 text-sm">
+              タグ（カンマ区切り）
+              <input
+                type="text"
+                value={tagsInput}
+                onChange={(e) => setTagsInput(e.target.value)}
+                className="rounded border border-neutral-300 px-3 py-2"
+                placeholder="例: 濃厚, 大盛り"
+              />
+            </label>
+
+            <label className="flex flex-col gap-1 text-sm">
+              コメント
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                className="rounded border border-neutral-300 px-3 py-2"
+                rows={3}
+              />
+            </label>
+
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={isPublic}
+                onChange={(e) => setIsPublic(e.target.checked)}
+              />
+              公開する
+            </label>
+
+            {errorMessage && (
+              <p className="text-sm text-red-600">{errorMessage}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="mt-2 rounded bg-neutral-900 px-3 py-2 text-sm text-white disabled:opacity-50"
+            >
+              記録する
+            </button>
+          </>
+        )}
+      </form>
+    </main>
+  )
+}
+
+export default NewEntryPage

@@ -19,9 +19,12 @@ function HomePage() {
       <p className="mt-2 text-sm text-neutral-600">
         {user?.email} としてログイン中です。自分だけの評価軸で、あらゆるものを記録するアプリ。準備中です。
       </p>
-      <nav className="mt-6">
+      <nav className="mt-6 flex flex-col gap-2">
         <Link to="/genres" className="text-sm text-blue-600 underline">
           ジャンルを管理する
+        </Link>
+        <Link to="/entries/new" className="text-sm text-blue-600 underline">
+          記録を作成する
         </Link>
       </nav>
     </main>
