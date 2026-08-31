@@ -1,51 +1,69 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 440" font-family="sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" font-family="sans-serif">
   <defs>
     <marker id="arrow4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
     </marker>
   </defs>
-  <rect width="900" height="440" fill="#ffffff"/>
-  <text x="450" y="30" text-anchor="middle" font-size="18" font-weight="bold">記録作成の処理フロー</text>
+  <rect width="900" height="560" fill="#ffffff"/>
+  <text x="450" y="30" text-anchor="middle" font-size="18" font-weight="bold">記録作成の処理フロー(写真アップロード込み)</text>
 
-  <rect x="30" y="70" width="220" height="70" rx="8" fill="#e8f0fe" stroke="#4c6ef5"/>
-  <text x="140" y="95" text-anchor="middle" font-size="13" font-weight="bold">NewEntryPage</text>
-  <text x="140" y="113" text-anchor="middle" font-size="11">ジャンル選択→軸ごとの</text>
-  <text x="140" y="129" text-anchor="middle" font-size="11">スライダーでスコア入力</text>
+  <rect x="30" y="60" width="220" height="70" rx="8" fill="#e8f0fe" stroke="#4c6ef5"/>
+  <text x="140" y="85" text-anchor="middle" font-size="13" font-weight="bold">NewEntryPage</text>
+  <text x="140" y="103" text-anchor="middle" font-size="11">ジャンル選択・スコア入力・</text>
+  <text x="140" y="119" text-anchor="middle" font-size="11">写真選択(任意、1枚)</text>
 
-  <rect x="330" y="70" width="220" height="70" rx="8" fill="#f3f0ff" stroke="#7048e8"/>
-  <text x="440" y="95" text-anchor="middle" font-size="13" font-weight="bold">RadarChart(プレビュー)</text>
-  <text x="440" y="113" text-anchor="middle" font-size="11">スライダー変更のたびに</text>
-  <text x="440" y="129" text-anchor="middle" font-size="11">リアルタイム再描画</text>
+  <rect x="330" y="60" width="220" height="70" rx="8" fill="#ffe8cc" stroke="#e8590c"/>
+  <text x="440" y="85" text-anchor="middle" font-size="13" font-weight="bold">entryIdをクライアントで生成</text>
+  <text x="440" y="103" text-anchor="middle" font-size="11">crypto.randomUUID()</text>
+  <text x="440" y="119" text-anchor="middle" font-size="11">Storageの命名規則に使う</text>
 
-  <line x1="250" y1="105" x2="328" y2="105" stroke="#333" stroke-width="1.5" marker-end="url(#arrow4)"/>
+  <line x1="250" y1="95" x2="328" y2="95" stroke="#333" stroke-width="1.5" marker-end="url(#arrow4)"/>
 
-  <rect x="640" y="70" width="220" height="70" rx="8" fill="#fff3bf" stroke="#f59f00"/>
-  <text x="750" y="95" text-anchor="middle" font-size="13" font-weight="bold">entries へ INSERT</text>
-  <text x="750" y="113" text-anchor="middle" font-size="11">target_name/日付/タグ/</text>
-  <text x="750" y="129" text-anchor="middle" font-size="11">公開設定/ジャンルスナップショット</text>
+  <rect x="640" y="60" width="220" height="70" rx="8" fill="#fff3bf" stroke="#f59f00"/>
+  <text x="750" y="85" text-anchor="middle" font-size="13" font-weight="bold">Storageへ写真アップロード</text>
+  <text x="750" y="103" text-anchor="middle" font-size="11">パス: {owner_id}/{entryId}.拡張子</text>
+  <text x="750" y="119" text-anchor="middle" font-size="11">(写真がある場合のみ)</text>
 
-  <line x1="140" y1="140" x2="750" y2="140" stroke="#333" stroke-width="1.5" stroke-dasharray="2 2"/>
-  <line x1="750" y1="140" x2="750" y2="68" stroke="#333" stroke-width="1.5" marker-end="url(#arrow4)"/>
-  <text x="450" y="160" text-anchor="middle" font-size="11" fill="#555">「記録する」押下</text>
+  <line x1="550" y1="95" x2="638" y2="95" stroke="#333" stroke-width="1.5" marker-end="url(#arrow4)"/>
 
-  <rect x="640" y="190" width="220" height="70" rx="8" fill="#fff3bf" stroke="#f59f00"/>
-  <text x="750" y="215" text-anchor="middle" font-size="13" font-weight="bold">entry_scores へ一括INSERT</text>
-  <text x="750" y="233" text-anchor="middle" font-size="11">軸ごとのスコア・</text>
-  <text x="750" y="249" text-anchor="middle" font-size="11">軸名スナップショット</text>
+  <rect x="640" y="170" width="220" height="60" rx="8" fill="#ffe3e3" stroke="#e03131"/>
+  <text x="750" y="195" text-anchor="middle" font-size="12" font-weight="bold">アップロード失敗</text>
+  <text x="750" y="213" text-anchor="middle" font-size="11">エラー表示して終了(entries未作成)</text>
 
-  <line x1="750" y1="140" x2="750" y2="188" stroke="#333" stroke-width="1.5" marker-end="url(#arrow4)"/>
+  <line x1="750" y1="130" x2="750" y2="168" stroke="#333" stroke-width="1.5" marker-end="url(#arrow4)"/>
 
-  <rect x="640" y="310" width="220" height="80" rx="8" fill="#ffe3e3" stroke="#e03131"/>
-  <text x="750" y="335" text-anchor="middle" font-size="12" font-weight="bold">失敗時</text>
-  <text x="750" y="353" text-anchor="middle" font-size="11">直前に作ったentries行を削除</text>
-  <text x="750" y="369" text-anchor="middle" font-size="11">(スコアのない記録を残さない)</text>
+  <rect x="330" y="250" width="220" height="70" rx="8" fill="#fff3bf" stroke="#f59f00"/>
+  <text x="440" y="275" text-anchor="middle" font-size="13" font-weight="bold">entries へ INSERT</text>
+  <text x="440" y="293" text-anchor="middle" font-size="11">id/owner_id/photo_path等</text>
+  <text x="440" y="309" text-anchor="middle" font-size="11">(生成済みentryIdを使用)</text>
 
-  <line x1="750" y1="260" x2="750" y2="308" stroke="#333" stroke-width="1.5" marker-end="url(#arrow4)"/>
+  <line x1="750" y1="130" x2="440" y2="248" stroke="#333" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow4)"/>
+  <text x="600" y="200" text-anchor="middle" font-size="11" fill="#555">成功時</text>
 
-  <rect x="330" y="310" width="220" height="80" rx="8" fill="#d3f9d8" stroke="#2f9e44"/>
-  <text x="440" y="335" text-anchor="middle" font-size="12" font-weight="bold">成功時</text>
-  <text x="440" y="353" text-anchor="middle" font-size="11">「記録しました」パネルに</text>
-  <text x="440" y="369" text-anchor="middle" font-size="11">RadarChartで確認結果を表示</text>
+  <rect x="640" y="250" width="220" height="80" rx="8" fill="#ffe3e3" stroke="#e03131"/>
+  <text x="750" y="275" text-anchor="middle" font-size="12" font-weight="bold">entries INSERT失敗</text>
+  <text x="750" y="293" text-anchor="middle" font-size="11">アップロード済み写真があれば</text>
+  <text x="750" y="309" text-anchor="middle" font-size="11">Storageから削除して後片付け</text>
 
-  <line x1="640" y1="225" x2="552" y2="340" stroke="#333" stroke-width="1.5" marker-end="url(#arrow4)"/>
+  <line x1="550" y1="285" x2="638" y2="285" stroke="#333" stroke-width="1.5" marker-end="url(#arrow4)"/>
+
+  <rect x="330" y="360" width="220" height="70" rx="8" fill="#fff3bf" stroke="#f59f00"/>
+  <text x="440" y="385" text-anchor="middle" font-size="13" font-weight="bold">entry_scores へ一括INSERT</text>
+  <text x="440" y="403" text-anchor="middle" font-size="11">軸ごとのスコア</text>
+
+  <line x1="440" y1="320" x2="440" y2="358" stroke="#333" stroke-width="1.5" marker-end="url(#arrow4)"/>
+
+  <rect x="640" y="360" width="220" height="90" rx="8" fill="#ffe3e3" stroke="#e03131"/>
+  <text x="750" y="385" text-anchor="middle" font-size="12" font-weight="bold">entry_scores INSERT失敗</text>
+  <text x="750" y="403" text-anchor="middle" font-size="11">entries行を削除し、</text>
+  <text x="750" y="419" text-anchor="middle" font-size="11">アップロード済み写真があれば</text>
+  <text x="750" y="435" text-anchor="middle" font-size="11">Storageからも削除</text>
+
+  <line x1="550" y1="395" x2="638" y2="395" stroke="#333" stroke-width="1.5" marker-end="url(#arrow4)"/>
+
+  <rect x="330" y="470" width="220" height="60" rx="8" fill="#d3f9d8" stroke="#2f9e44"/>
+  <text x="440" y="495" text-anchor="middle" font-size="13" font-weight="bold">成功: 確認パネル表示</text>
+  <text x="440" y="513" text-anchor="middle" font-size="11">RadarChart + 写真プレビュー</text>
+
+  <line x1="440" y1="430" x2="440" y2="468" stroke="#333" stroke-width="1.5" marker-end="url(#arrow4)"/>
 </svg>

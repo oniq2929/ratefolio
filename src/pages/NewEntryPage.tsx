@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
@@ -19,6 +19,7 @@ interface CreatedEntryPreview {
   targetName: string
   scaleMax: number
   axes: { name: string; score: number }[]
+  photoPreviewUrl: string | null
 }
 
 function NewEntryPage() {
@@ -33,11 +34,14 @@ function NewEntryPage() {
   const [tagsInput, setTagsInput] = useState('')
   const [comment, setComment] = useState('')
   const [isPublic, setIsPublic] = useState(false)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [createdEntry, setCreatedEntry] = useState<CreatedEntryPreview | null>(
     null,
   )
+  const photoInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     supabase
@@ -78,6 +82,14 @@ function NewEntryPage() {
     setScores(initialScores)
   }
 
+  const handlePhotoChange = (file: File | null) => {
+    if (photoPreviewUrl) {
+      URL.revokeObjectURL(photoPreviewUrl)
+    }
+    setPhotoFile(file)
+    setPhotoPreviewUrl(file ? URL.createObjectURL(file) : null)
+  }
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
     setErrorMessage(null)
@@ -97,9 +109,30 @@ function NewEntryPage() {
 
     setSubmitting(true)
 
+    // Storageの命名規則({owner_id}/{entry_id}.拡張子)に合わせるため、
+    // entries行のidをクライアント側であらかじめ生成しておく
+    const entryId = crypto.randomUUID()
+    let photoPath: string | null = null
+
+    if (photoFile) {
+      const ext = photoFile.name.split('.').pop() || 'jpg'
+      photoPath = `${user.id}/${entryId}.${ext}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('entry-photos')
+        .upload(photoPath, photoFile, { contentType: photoFile.type })
+
+      if (uploadError) {
+        setErrorMessage(uploadError.message)
+        setSubmitting(false)
+        return
+      }
+    }
+
     const { data: entry, error: entryError } = await supabase
       .from('entries')
       .insert({
+        id: entryId,
         owner_id: user.id,
         genre_id: selectedGenre.id,
         genre_name: selectedGenre.name,
@@ -109,12 +142,15 @@ function NewEntryPage() {
         comment: comment.trim() || null,
         tags,
         is_public: isPublic,
-        photo_path: null,
+        photo_path: photoPath,
       })
       .select()
       .single()
 
     if (entryError || !entry) {
+      if (photoPath) {
+        await supabase.storage.from('entry-photos').remove([photoPath])
+      }
       setErrorMessage(entryError?.message ?? '記録の作成に失敗しました。')
       setSubmitting(false)
       return
@@ -131,8 +167,11 @@ function NewEntryPage() {
     )
 
     if (scoresError) {
-      // スコアの作成に失敗した場合、スコアのない記録だけが残らないよう後片付けする
+      // スコアの作成に失敗した場合、スコアのない記録・アップロード済みの写真を残さないよう後片付けする
       await supabase.from('entries').delete().eq('id', entry.id)
+      if (photoPath) {
+        await supabase.storage.from('entry-photos').remove([photoPath])
+      }
       setErrorMessage(scoresError.message)
       setSubmitting(false)
       return
@@ -145,11 +184,17 @@ function NewEntryPage() {
         name: axis.name,
         score: scores[axis.id] ?? defaultScoreFor(selectedGenre.scale_max),
       })),
+      photoPreviewUrl,
     })
     setTargetName('')
     setTagsInput('')
     setComment('')
     setIsPublic(false)
+    setPhotoFile(null)
+    setPhotoPreviewUrl(null)
+    if (photoInputRef.current) {
+      photoInputRef.current.value = ''
+    }
     handleSelectGenre(selectedGenre.id)
     setSubmitting(false)
   }
@@ -188,6 +233,15 @@ function NewEntryPage() {
           <div className="mt-2 flex justify-center">
             <RadarChart axes={createdEntry.axes} scaleMax={createdEntry.scaleMax} size={200} />
           </div>
+          {createdEntry.photoPreviewUrl && (
+            <div className="mt-2 flex justify-center">
+              <img
+                src={createdEntry.photoPreviewUrl}
+                alt={createdEntry.targetName}
+                className="max-h-48 rounded"
+              />
+            </div>
+          )}
         </div>
       )}
 
@@ -267,6 +321,39 @@ function NewEntryPage() {
                 scaleMax={selectedGenre.scale_max}
               />
             </div>
+
+            <label className="flex flex-col gap-1 text-sm">
+              写真（任意、1枚まで）
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/*"
+                onChange={(e) => handlePhotoChange(e.target.files?.[0] ?? null)}
+                className="cursor-pointer text-sm file:mr-3 file:cursor-pointer file:rounded file:border-0 file:bg-neutral-900 file:px-3 file:py-2 file:text-sm file:text-white file:hover:bg-neutral-700"
+              />
+            </label>
+
+            {photoPreviewUrl && (
+              <div className="flex items-center gap-3">
+                <img
+                  src={photoPreviewUrl}
+                  alt="プレビュー"
+                  className="h-24 w-24 rounded object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    handlePhotoChange(null)
+                    if (photoInputRef.current) {
+                      photoInputRef.current.value = ''
+                    }
+                  }}
+                  className="text-xs text-red-600 underline"
+                >
+                  写真を削除
+                </button>
+              </div>
+            )}
 
             <label className="flex flex-col gap-1 text-sm">
               タグ（カンマ区切り）
