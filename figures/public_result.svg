@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 300" font-family="sans-serif">
+  <rect width="700" height="300" fill="#ffffff"/>
+  <text x="350" y="30" text-anchor="middle" font-size="16" font-weight="bold">動作確認: 公開一覧(フィード/ランキング)</text>
+
+  <rect x="60" y="60" width="580" height="100" rx="8" fill="#ffffff" stroke="#212529"/>
+  <text x="80" y="85" font-size="13" font-weight="bold">フィード表示</text>
+  <text x="80" y="108" font-size="12">自分が「公開」に設定した記録のみが日付順に表示された</text>
+  <text x="80" y="128" font-size="12">「非公開」に設定した記録は表示されないことを確認</text>
+  <text x="80" y="148" font-size="11" fill="#2f9e44">→ is_public=trueでの絞り込みが正しく機能</text>
+
+  <rect x="60" y="180" width="580" height="90" rx="8" fill="#ffffff" stroke="#212529"/>
+  <text x="80" y="205" font-size="13" font-weight="bold">ランキング表示</text>
+  <text x="80" y="228" font-size="12">ジャンルを選択し、評価軸ごとのランキングに切り替わることを確認</text>
+  <text x="80" y="248" font-size="11" fill="#2f9e44">→ 順位・スコアの表示が正しく計算された</text>
+
+  <text x="350" y="290" text-anchor="middle" font-size="11" fill="#555">単一テストアカウントでの確認のため、複数ユーザーでの公開記録混在の検証は今後の課題</text>
+</svg>

@@ -19,6 +19,9 @@ function HomePage() {
         <Link to="/entries" className="text-sm text-blue-600 underline">
           記録一覧を見る
         </Link>
+        <Link to="/public" className="text-sm text-blue-600 underline">
+          みんなの公開記録を見る
+        </Link>
       </nav>
     </main>
   )

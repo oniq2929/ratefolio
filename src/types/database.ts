@@ -53,3 +53,14 @@ export interface EntryScore {
   sort_order: number
   score: number
 }
+
+export interface Formula {
+  id: string
+  owner_id: string
+  /** 対象ジャンルの名前(axis_nameと同様、名前でマッチングする) */
+  genre_name: string
+  name: string
+  /** 軸名 -> 重み のマップ。例: { "コシ": 3, "出汁": 1, "量": -1 } */
+  weights: Record<string, number>
+  created_at: string
+}

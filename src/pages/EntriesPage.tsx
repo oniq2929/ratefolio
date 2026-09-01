@@ -3,17 +3,25 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import RadarChart from '../components/RadarChart'
-import type { Axis, Entry, EntryScore, Genre } from '../types/database'
+import type { Axis, Entry, EntryScore, Formula, Genre } from '../types/database'
 
 type EntryWithScores = Entry & { entry_scores: EntryScore[] }
 type GenreWithAxes = Genre & { axes: Axis[] }
-type SortMode = 'date_desc' | 'date_asc' | 'axis_desc'
+type SortMode = 'date_desc' | 'date_asc' | 'axis_desc' | 'formula_desc'
+
+function scoreByFormula(entry: EntryWithScores, weights: Record<string, number>) {
+  return entry.entry_scores.reduce(
+    (sum, s) => sum + (weights[s.axis_name] ?? 0) * s.score,
+    0,
+  )
+}
 
 function EntriesPage() {
   const { user } = useAuth()
 
   const [entries, setEntries] = useState<EntryWithScores[]>([])
   const [genres, setGenres] = useState<GenreWithAxes[]>([])
+  const [formulas, setFormulas] = useState<Formula[]>([])
   const [photoUrls, setPhotoUrls] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -22,6 +30,7 @@ function EntriesPage() {
   const [keyword, setKeyword] = useState('')
   const [sortMode, setSortMode] = useState<SortMode>('date_desc')
   const [sortAxisId, setSortAxisId] = useState('')
+  const [sortFormulaId, setSortFormulaId] = useState('')
 
   useEffect(() => {
     if (!user) return
@@ -36,7 +45,11 @@ function EntriesPage() {
         .from('genres')
         .select('*, axes(*)')
         .order('created_at', { ascending: false }),
-    ]).then(async ([entriesRes, genresRes]) => {
+      supabase
+        .from('formulas')
+        .select('*')
+        .order('created_at', { ascending: false }),
+    ]).then(async ([entriesRes, genresRes, formulasRes]) => {
       if (entriesRes.error) {
         setErrorMessage(entriesRes.error.message)
         setLoading(false)
@@ -47,10 +60,16 @@ function EntriesPage() {
         setLoading(false)
         return
       }
+      if (formulasRes.error) {
+        setErrorMessage(formulasRes.error.message)
+        setLoading(false)
+        return
+      }
 
       const fetchedEntries = (entriesRes.data ?? []) as EntryWithScores[]
       setEntries(fetchedEntries)
       setGenres((genresRes.data ?? []) as GenreWithAxes[])
+      setFormulas((formulasRes.data ?? []) as Formula[])
 
       // 非公開バケットの写真は、期限付きの署名URLを発行して初めて表示できる
       const photoPaths = fetchedEntries
@@ -82,6 +101,14 @@ function EntriesPage() {
     [genres, selectedGenreId],
   )
 
+  const formulasForSelectedGenre = useMemo(
+    () =>
+      selectedGenre
+        ? formulas.filter((f) => f.genre_name === selectedGenre.name)
+        : [],
+    [formulas, selectedGenre],
+  )
+
   const visibleEntries = useMemo(() => {
     let result = entries
 
@@ -106,17 +133,27 @@ function EntriesPage() {
       const scoreOf = (entry: EntryWithScores) =>
         entry.entry_scores.find((s) => s.axis_id === sortAxisId)?.score ?? -1
       sorted.sort((a, b) => scoreOf(b) - scoreOf(a))
+    } else if (sortMode === 'formula_desc' && sortFormulaId) {
+      const formula = formulas.find((f) => f.id === sortFormulaId)
+      if (formula) {
+        sorted.sort(
+          (a, b) =>
+            scoreByFormula(b, formula.weights) -
+            scoreByFormula(a, formula.weights),
+        )
+      }
     } else {
       sorted.sort((a, b) => b.entry_date.localeCompare(a.entry_date))
     }
 
     return sorted
-  }, [entries, selectedGenreId, keyword, sortMode, sortAxisId])
+  }, [entries, selectedGenreId, keyword, sortMode, sortAxisId, sortFormulaId, formulas])
 
   const handleGenreFilterChange = (genreId: string) => {
     setSelectedGenreId(genreId)
     setSortAxisId('')
-    if (sortMode === 'axis_desc' && !genreId) {
+    setSortFormulaId('')
+    if ((sortMode === 'axis_desc' || sortMode === 'formula_desc') && !genreId) {
       setSortMode('date_desc')
     }
   }
@@ -185,6 +222,12 @@ function EntriesPage() {
             <option value="axis_desc" disabled={!selectedGenre}>
               特定の評価軸が高い順(ジャンルを1つ選択時のみ)
             </option>
+            <option
+              value="formula_desc"
+              disabled={!selectedGenre || formulasForSelectedGenre.length === 0}
+            >
+              カスタム評価式が高い順(ジャンルを1つ選択時のみ)
+            </option>
           </select>
         </label>
 
@@ -209,7 +252,36 @@ function EntriesPage() {
             </select>
           </label>
         )}
+
+        {sortMode === 'formula_desc' && selectedGenre && (
+          <label className="flex flex-col gap-1 text-sm">
+            計算式
+            <select
+              value={sortFormulaId}
+              onChange={(e) => setSortFormulaId(e.target.value)}
+              className="rounded border border-neutral-300 px-3 py-2"
+            >
+              <option value="" disabled>
+                選択してください
+              </option>
+              {formulasForSelectedGenre.map((formula) => (
+                <option key={formula.id} value={formula.id}>
+                  {formula.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
       </div>
+
+      {selectedGenre && (
+        <Link
+          to={`/genres/${selectedGenre.id}/formulas`}
+          className="mt-2 inline-block text-xs text-blue-600 underline"
+        >
+          「{selectedGenre.name}」の計算式を管理する
+        </Link>
+      )}
 
       {visibleEntries.length === 0 && (
         <p className="mt-6 text-sm text-neutral-500">
@@ -257,6 +329,16 @@ function EntriesPage() {
                 {entry.comment && (
                   <p className="mt-1 text-sm text-neutral-700">
                     {entry.comment}
+                  </p>
+                )}
+                {sortMode === 'formula_desc' && sortFormulaId && (
+                  <p className="mt-1 text-xs font-semibold text-blue-600">
+                    計算式スコア:{' '}
+                    {scoreByFormula(
+                      entry,
+                      formulas.find((f) => f.id === sortFormulaId)?.weights ??
+                        {},
+                    )}
                   </p>
                 )}
               </div>

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" font-family="sans-serif">
+  <defs>
+    <marker id="arrow7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+  </defs>
+  <rect width="900" height="460" fill="#ffffff"/>
+  <text x="450" y="30" text-anchor="middle" font-size="18" font-weight="bold">公開一覧(フィード/ランキング)の処理フロー</text>
+
+  <rect x="30" y="60" width="240" height="70" rx="8" fill="#e8f0fe" stroke="#4c6ef5"/>
+  <text x="150" y="85" text-anchor="middle" font-size="13" font-weight="bold">PublicPage表示</text>
+  <text x="150" y="103" text-anchor="middle" font-size="11">entries(is_public=true)を</text>
+  <text x="150" y="119" text-anchor="middle" font-size="11">全ユーザー分取得</text>
+
+  <rect x="330" y="60" width="240" height="70" rx="8" fill="#fff3bf" stroke="#f59f00"/>
+  <text x="450" y="85" text-anchor="middle" font-size="13" font-weight="bold">投稿者名を取得</text>
+  <text x="450" y="103" text-anchor="middle" font-size="11">owner_idの一覧から</text>
+  <text x="450" y="119" text-anchor="middle" font-size="11">profilesをまとめて取得</text>
+
+  <line x1="270" y1="95" x2="328" y2="95" stroke="#333" stroke-width="1.5" marker-end="url(#arrow7)"/>
+
+  <rect x="630" y="60" width="240" height="70" rx="8" fill="#fff3bf" stroke="#f59f00"/>
+  <text x="750" y="85" text-anchor="middle" font-size="13" font-weight="bold">写真の署名付きURL発行</text>
+  <text x="750" y="103" text-anchor="middle" font-size="11">他ユーザーの写真も、公開設定</text>
+  <text x="750" y="119" text-anchor="middle" font-size="11">なら閲覧権限が認められる</text>
+
+  <line x1="570" y1="95" x2="628" y2="95" stroke="#333" stroke-width="1.5" marker-end="url(#arrow7)"/>
+
+  <rect x="180" y="200" width="540" height="90" rx="8" fill="#f3f0ff" stroke="#7048e8"/>
+  <text x="450" y="228" text-anchor="middle" font-size="13" font-weight="bold">表示モード切替</text>
+  <text x="450" y="250" text-anchor="middle" font-size="12">フィード: entry_dateの新しい順</text>
+  <text x="450" y="270" text-anchor="middle" font-size="12">ランキング: 全軸平均 or 特定の評価軸(軸名マッチング)で正規化(0〜1)して順位付け</text>
+
+  <line x1="450" y1="130" x2="450" y2="198" stroke="#333" stroke-width="1.5" marker-end="url(#arrow7)"/>
+
+  <rect x="180" y="340" width="540" height="80" rx="8" fill="#d3f9d8" stroke="#2f9e44"/>
+  <text x="450" y="368" text-anchor="middle" font-size="13" font-weight="bold">一覧表示</text>
+  <text x="450" y="390" text-anchor="middle" font-size="12">投稿者名・対象名・日付・タグ・コメント・ミニRadarChart・(写真)</text>
+
+  <line x1="450" y1="290" x2="450" y2="338" stroke="#333" stroke-width="1.5" marker-end="url(#arrow7)"/>
+</svg>

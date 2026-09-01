@@ -94,6 +94,12 @@ function GenresPage() {
                 .map((axis) => axis.name)
                 .join(' / ')}
             </p>
+            <Link
+              to={`/genres/${genre.id}/formulas`}
+              className="mt-2 inline-block text-xs text-blue-600 underline"
+            >
+              計算式を管理
+            </Link>
           </li>
         ))}
       </ul>
