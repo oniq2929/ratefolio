@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" font-family="sans-serif">
+  <rect width="900" height="420" fill="#ffffff"/>
+  <text x="450" y="30" text-anchor="middle" font-size="17" font-weight="bold">「RLSで見える範囲」と「自分のデータだけの一覧」は別物</text>
+
+  <rect x="60" y="70" width="780" height="140" rx="10" fill="#e8f0fe" stroke="#4c6ef5"/>
+  <text x="450" y="98" text-anchor="middle" font-size="13" font-weight="bold">entries_select_own_or_public ポリシーがSELECTを許可する範囲</text>
+  <circle cx="300" cy="150" r="60" fill="#4c6ef5" fill-opacity="0.35" stroke="#4c6ef5"/>
+  <text x="300" y="155" text-anchor="middle" font-size="12">自分の記録(公開/非公開とも)</text>
+  <circle cx="560" cy="150" r="60" fill="#f59f00" fill-opacity="0.35" stroke="#f59f00"/>
+  <text x="560" y="150" text-anchor="middle" font-size="12">他ユーザーの</text>
+  <text x="560" y="166" text-anchor="middle" font-size="12">公開記録</text>
+
+  <text x="450" y="250" text-anchor="middle" font-size="13" font-weight="bold">↓ そのまま.from('entries').select()すると、両方が返ってくる</text>
+
+  <rect x="60" y="280" width="780" height="110" rx="10" fill="#ebfbee" stroke="#2f9e44"/>
+  <text x="450" y="305" text-anchor="middle" font-size="13" font-weight="bold">「記録一覧(自分の記録だけ)」に必要な範囲</text>
+  <text x="450" y="330" text-anchor="middle" font-size="12">.eq('owner_id', user.id) を明示的に追加して、初めて</text>
+  <text x="450" y="350" text-anchor="middle" font-size="12">「自分の記録だけ」に絞り込める(RLSは"見てよい範囲"を決めるだけで、</text>
+  <text x="450" y="370" text-anchor="middle" font-size="12">"欲しい範囲"に自動で絞ってはくれない)</text>
+</svg>

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" font-family="sans-serif">
+  <defs>
+    <marker id="arrow5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+  </defs>
+  <rect width="900" height="460" fill="#ffffff"/>
+  <text x="450" y="30" text-anchor="middle" font-size="18" font-weight="bold">記録一覧の処理フロー</text>
+
+  <rect x="30" y="60" width="220" height="70" rx="8" fill="#e8f0fe" stroke="#4c6ef5"/>
+  <text x="140" y="85" text-anchor="middle" font-size="13" font-weight="bold">EntriesPage表示</text>
+  <text x="140" y="103" text-anchor="middle" font-size="11">entries(owner_id=自分)</text>
+  <text x="140" y="119" text-anchor="middle" font-size="11">とgenresを並行取得</text>
+
+  <rect x="330" y="60" width="220" height="70" rx="8" fill="#fff3bf" stroke="#f59f00"/>
+  <text x="440" y="85" text-anchor="middle" font-size="13" font-weight="bold">写真パスを収集</text>
+  <text x="440" y="103" text-anchor="middle" font-size="11">photo_pathがある記録だけ</text>
+  <text x="440" y="119" text-anchor="middle" font-size="11">まとめて抽出</text>
+
+  <line x1="250" y1="95" x2="328" y2="95" stroke="#333" stroke-width="1.5" marker-end="url(#arrow5)"/>
+
+  <rect x="640" y="60" width="220" height="70" rx="8" fill="#fff3bf" stroke="#f59f00"/>
+  <text x="750" y="85" text-anchor="middle" font-size="13" font-weight="bold">createSignedUrls</text>
+  <text x="750" y="103" text-anchor="middle" font-size="11">複数パスを1回のAPI呼び出しで</text>
+  <text x="750" y="119" text-anchor="middle" font-size="11">まとめて署名付きURL化(60分間有効)</text>
+
+  <line x1="550" y1="95" x2="638" y2="95" stroke="#333" stroke-width="1.5" marker-end="url(#arrow5)"/>
+
+  <rect x="330" y="180" width="530" height="70" rx="8" fill="#f3f0ff" stroke="#7048e8"/>
+  <text x="595" y="205" text-anchor="middle" font-size="13" font-weight="bold">クライアント側で絞り込み・並び替え</text>
+  <text x="595" y="223" text-anchor="middle" font-size="11">ジャンル一致 → キーワード一致(対象名/コメント/タグ) → 日付 or 評価軸スコアでソート</text>
+  <text x="595" y="239" text-anchor="middle" font-size="11">(評価軸ソートは軸のスコアが無い記録を最下位扱い)</text>
+
+  <line x1="750" y1="130" x2="595" y2="178" stroke="#333" stroke-width="1.5" marker-end="url(#arrow5)"/>
+
+  <rect x="330" y="300" width="530" height="80" rx="8" fill="#d3f9d8" stroke="#2f9e44"/>
+  <text x="595" y="330" text-anchor="middle" font-size="13" font-weight="bold">一覧表示</text>
+  <text x="595" y="350" text-anchor="middle" font-size="11">写真(あれば) / 対象名 / 日付 / タグ / コメント / ミニRadarChart</text>
+  <text x="595" y="366" text-anchor="middle" font-size="11">を各記録カードとして表示</text>
+
+  <line x1="595" y1="250" x2="595" y2="298" stroke="#333" stroke-width="1.5" marker-end="url(#arrow5)"/>
+
+  <text x="450" y="420" text-anchor="middle" font-size="11" fill="#555">絞り込み・並び替えはDB問い合わせを増やさず、取得済みデータに対してクライアント側で行う</text>
+  <text x="450" y="438" text-anchor="middle" font-size="11" fill="#555">(記録数が少ない個人利用アプリのため。将来件数が増えたらサーバー側検索への切替を検討)</text>
+</svg>
