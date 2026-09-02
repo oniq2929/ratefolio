@@ -186,37 +186,39 @@ function PublicPage() {
   if (loading) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-10">
-        <p className="text-sm text-neutral-500">読み込み中...</p>
+        <p className="rf-muted text-sm">読み込み中...</p>
       </main>
     )
   }
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="text-2xl font-bold">みんなの公開記録</h1>
+      <h1 className="rf-heading text-2xl font-semibold">みんなの公開記録</h1>
 
-      {errorMessage && (
-        <p className="mt-4 text-sm text-red-600">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="rf-danger mt-4 text-sm">{errorMessage}</p>}
 
       <div className="mt-6 flex gap-2 text-sm">
         <button
           type="button"
           onClick={() => setViewMode('feed')}
-          className={`rounded px-3 py-1 ${
-            viewMode === 'feed' ? 'bg-neutral-900 text-white' : 'bg-neutral-100'
-          }`}
+          className="rounded px-3 py-1"
+          style={
+            viewMode === 'feed'
+              ? { background: 'var(--rf-accent)', color: 'var(--rf-accent-contrast)' }
+              : { background: 'var(--rf-chip-bg)', color: 'var(--rf-text)' }
+          }
         >
           フィード
         </button>
         <button
           type="button"
           onClick={() => setViewMode('ranking')}
-          className={`rounded px-3 py-1 ${
+          className="rounded px-3 py-1"
+          style={
             viewMode === 'ranking'
-              ? 'bg-neutral-900 text-white'
-              : 'bg-neutral-100'
-          }`}
+              ? { background: 'var(--rf-accent)', color: 'var(--rf-accent-contrast)' }
+              : { background: 'var(--rf-chip-bg)', color: 'var(--rf-text)' }
+          }
         >
           ランキング
         </button>
@@ -228,7 +230,7 @@ function PublicPage() {
           <select
             value={selectedGenreName}
             onChange={(e) => handleGenreFilterChange(e.target.value)}
-            className="rounded border border-neutral-300 px-3 py-2"
+            className="rf-input rounded px-3 py-2"
           >
             <option value="">すべて</option>
             {genreNames.map((name) => (
@@ -246,7 +248,7 @@ function PublicPage() {
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             placeholder="対象名・コメント・タグ"
-            className="rounded border border-neutral-300 px-3 py-2"
+            className="rf-input rounded px-3 py-2"
           />
         </label>
 
@@ -260,7 +262,7 @@ function PublicPage() {
                 setRankingAxisName('')
                 setRankingFormulaId('')
               }}
-              className="rounded border border-neutral-300 px-3 py-2"
+              className="rf-input rounded px-3 py-2"
             >
               <option value="overall">全軸平均</option>
               <option value="axis" disabled={!selectedGenreName}>
@@ -286,7 +288,7 @@ function PublicPage() {
               <select
                 value={rankingAxisName}
                 onChange={(e) => setRankingAxisName(e.target.value)}
-                className="rounded border border-neutral-300 px-3 py-2"
+                className="rf-input rounded px-3 py-2"
               >
                 <option value="" disabled>
                   選択してください
@@ -308,7 +310,7 @@ function PublicPage() {
               <select
                 value={rankingFormulaId}
                 onChange={(e) => setRankingFormulaId(e.target.value)}
-                className="rounded border border-neutral-300 px-3 py-2"
+                className="rf-input rounded px-3 py-2"
               >
                 <option value="" disabled>
                   選択してください
@@ -324,9 +326,7 @@ function PublicPage() {
       </div>
 
       {visibleEntries.length === 0 && (
-        <p className="mt-6 text-sm text-neutral-500">
-          条件に一致する公開記録がありません。
-        </p>
+        <p className="rf-muted mt-6 text-sm">条件に一致する公開記録がありません。</p>
       )}
 
       <ul className="mt-6 flex flex-col gap-4">
@@ -342,10 +342,10 @@ function PublicPage() {
           return (
             <li
               key={entry.id}
-              className="flex flex-col gap-4 rounded border border-neutral-200 p-4 sm:flex-row"
+              className="rf-surface flex flex-col gap-4 rounded p-4 sm:flex-row"
             >
               {viewMode === 'ranking' && (
-                <div className="flex-shrink-0 text-lg font-bold text-neutral-400">
+                <div className="rf-heading rf-accent flex-shrink-0 text-lg font-bold">
                   {index + 1}位
                 </div>
               )}
@@ -358,34 +358,38 @@ function PublicPage() {
               )}
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <h2 className="font-semibold">{entry.target_name}</h2>
-                  <span className="text-xs text-neutral-500">
+                  <h2 className="rf-heading font-semibold">
+                    {entry.target_name}
+                  </h2>
+                  <span className="rf-muted rf-mono text-xs">
                     {entry.entry_date}
                   </span>
                 </div>
-                <p className="text-xs text-neutral-500">
+                <p className="rf-muted text-xs">
                   {entry.genre_name} ・{' '}
                   {authorNames[entry.owner_id] ?? '不明なユーザー'}
                 </p>
                 {entry.tags.length > 0 && (
-                  <p className="mt-1 text-xs text-neutral-600">
-                    {entry.tags.map((tag) => `#${tag}`).join(' ')}
+                  <p className="mt-1 flex flex-wrap gap-1 text-xs">
+                    {entry.tags.map((tag) => (
+                      <span key={tag} className="rf-chip rounded-full px-2 py-0.5">
+                        #{tag}
+                      </span>
+                    ))}
                   </p>
                 )}
                 {entry.comment && (
-                  <p className="mt-1 text-sm text-neutral-700">
-                    {entry.comment}
-                  </p>
+                  <p className="mt-1 text-sm">{entry.comment}</p>
                 )}
                 {viewMode === 'ranking' && rankingBasis === 'formula' && (
-                  <p className="mt-1 text-xs font-semibold text-blue-600">
+                  <p className="rf-accent rf-mono mt-1 text-xs font-semibold">
                     計算式スコア: {score}
                   </p>
                 )}
                 {viewMode === 'ranking' &&
                   rankingBasis !== 'formula' &&
                   score >= 0 && (
-                    <p className="mt-1 text-xs font-semibold text-blue-600">
+                    <p className="rf-accent rf-mono mt-1 text-xs font-semibold">
                       {rankingBasis === 'axis'
                         ? `${rankingAxisName}: ${Math.round(score * entry.scale_max)}/${entry.scale_max}`
                         : `総合: ${Math.round(score * 100)}%`}

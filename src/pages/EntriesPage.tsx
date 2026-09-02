@@ -161,7 +161,7 @@ function EntriesPage() {
   if (loading) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-10">
-        <p className="text-sm text-neutral-500">読み込み中...</p>
+        <p className="rf-muted text-sm">読み込み中...</p>
       </main>
     )
   }
@@ -169,18 +169,16 @@ function EntriesPage() {
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">記録一覧</h1>
+        <h1 className="rf-heading text-2xl font-semibold">記録一覧</h1>
         <Link
           to="/entries/new"
-          className="rounded bg-neutral-900 px-3 py-2 text-sm text-white"
+          className="rf-btn-primary rounded px-3 py-2 text-sm"
         >
           + 記録を作成
         </Link>
       </div>
 
-      {errorMessage && (
-        <p className="mt-4 text-sm text-red-600">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="rf-danger mt-4 text-sm">{errorMessage}</p>}
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:gap-4">
         <label className="flex flex-col gap-1 text-sm">
@@ -188,7 +186,7 @@ function EntriesPage() {
           <select
             value={selectedGenreId}
             onChange={(e) => handleGenreFilterChange(e.target.value)}
-            className="rounded border border-neutral-300 px-3 py-2"
+            className="rf-input rounded px-3 py-2"
           >
             <option value="">すべて</option>
             {genres.map((genre) => (
@@ -206,7 +204,7 @@ function EntriesPage() {
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             placeholder="対象名・コメント・タグ"
-            className="rounded border border-neutral-300 px-3 py-2"
+            className="rf-input rounded px-3 py-2"
           />
         </label>
 
@@ -215,7 +213,7 @@ function EntriesPage() {
           <select
             value={sortMode}
             onChange={(e) => setSortMode(e.target.value as SortMode)}
-            className="rounded border border-neutral-300 px-3 py-2"
+            className="rf-input rounded px-3 py-2"
           >
             <option value="date_desc">日付が新しい順</option>
             <option value="date_asc">日付が古い順</option>
@@ -237,7 +235,7 @@ function EntriesPage() {
             <select
               value={sortAxisId}
               onChange={(e) => setSortAxisId(e.target.value)}
-              className="rounded border border-neutral-300 px-3 py-2"
+              className="rf-input rounded px-3 py-2"
             >
               <option value="" disabled>
                 選択してください
@@ -259,7 +257,7 @@ function EntriesPage() {
             <select
               value={sortFormulaId}
               onChange={(e) => setSortFormulaId(e.target.value)}
-              className="rounded border border-neutral-300 px-3 py-2"
+              className="rf-input rounded px-3 py-2"
             >
               <option value="" disabled>
                 選択してください
@@ -277,16 +275,14 @@ function EntriesPage() {
       {selectedGenre && (
         <Link
           to={`/genres/${selectedGenre.id}/formulas`}
-          className="mt-2 inline-block text-xs text-blue-600 underline"
+          className="rf-link mt-2 inline-block text-xs underline"
         >
           「{selectedGenre.name}」の計算式を管理する
         </Link>
       )}
 
       {visibleEntries.length === 0 && (
-        <p className="mt-6 text-sm text-neutral-500">
-          条件に一致する記録がありません。
-        </p>
+        <p className="rf-muted mt-6 text-sm">条件に一致する記録がありません。</p>
       )}
 
       <ul className="mt-6 flex flex-col gap-4">
@@ -301,7 +297,7 @@ function EntriesPage() {
           return (
             <li
               key={entry.id}
-              className="flex flex-col gap-4 rounded border border-neutral-200 p-4 sm:flex-row"
+              className="rf-surface flex flex-col gap-4 rounded p-4 sm:flex-row"
             >
               {photoUrl && (
                 <img
@@ -312,27 +308,31 @@ function EntriesPage() {
               )}
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <h2 className="font-semibold">{entry.target_name}</h2>
-                  <span className="text-xs text-neutral-500">
+                  <h2 className="rf-heading font-semibold">
+                    {entry.target_name}
+                  </h2>
+                  <span className="rf-muted rf-mono text-xs">
                     {entry.entry_date}
                   </span>
                 </div>
-                <p className="text-xs text-neutral-500">
+                <p className="rf-muted text-xs">
                   {entry.genre_name}
                   {entry.is_public ? '・公開' : '・非公開'}
                 </p>
                 {entry.tags.length > 0 && (
-                  <p className="mt-1 text-xs text-neutral-600">
-                    {entry.tags.map((tag) => `#${tag}`).join(' ')}
+                  <p className="mt-1 flex flex-wrap gap-1 text-xs">
+                    {entry.tags.map((tag) => (
+                      <span key={tag} className="rf-chip rounded-full px-2 py-0.5">
+                        #{tag}
+                      </span>
+                    ))}
                   </p>
                 )}
                 {entry.comment && (
-                  <p className="mt-1 text-sm text-neutral-700">
-                    {entry.comment}
-                  </p>
+                  <p className="mt-1 text-sm">{entry.comment}</p>
                 )}
                 {sortMode === 'formula_desc' && sortFormulaId && (
-                  <p className="mt-1 text-xs font-semibold text-blue-600">
+                  <p className="rf-accent rf-mono mt-1 text-xs font-semibold">
                     計算式スコア:{' '}
                     {scoreByFormula(
                       entry,

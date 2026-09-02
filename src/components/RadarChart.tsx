@@ -46,7 +46,7 @@ function RadarChart({ axes, scaleMax, size = 260 }: RadarChartProps) {
           key={ratio}
           points={toPointsAttr(axes.map((_, i) => pointAt(maxRadius * ratio, i)))}
           fill="none"
-          stroke="#d0d7de"
+          stroke="var(--rf-chart-grid, #d0d7de)"
           strokeWidth={1}
         />
       ))}
@@ -60,7 +60,7 @@ function RadarChart({ axes, scaleMax, size = 260 }: RadarChartProps) {
             y1={center}
             x2={outer.x}
             y2={outer.y}
-            stroke="#d0d7de"
+            stroke="var(--rf-chart-grid, #d0d7de)"
             strokeWidth={1}
           />
         )
@@ -68,9 +68,9 @@ function RadarChart({ axes, scaleMax, size = 260 }: RadarChartProps) {
 
       <polygon
         points={toPointsAttr(dataPoints)}
-        fill="#4c6ef5"
+        fill="var(--rf-accent, #4c6ef5)"
         fillOpacity={0.35}
-        stroke="#4c6ef5"
+        stroke="var(--rf-accent, #4c6ef5)"
         strokeWidth={2}
       />
 
@@ -86,7 +86,8 @@ function RadarChart({ axes, scaleMax, size = 260 }: RadarChartProps) {
             textAnchor={anchor}
             dominantBaseline="middle"
             fontSize={11}
-            fill="#495057"
+            fill="var(--rf-muted, #495057)"
+            fontFamily="var(--rf-font-body, sans-serif)"
           >
             {axis.name}({axis.score})
           </text>

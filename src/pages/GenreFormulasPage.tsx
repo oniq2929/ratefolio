@@ -113,7 +113,7 @@ function GenreFormulasPage() {
   if (loading) {
     return (
       <main className="mx-auto max-w-xl px-4 py-10">
-        <p className="text-sm text-neutral-500">読み込み中...</p>
+        <p className="rf-muted text-sm">読み込み中...</p>
       </main>
     )
   }
@@ -121,13 +121,10 @@ function GenreFormulasPage() {
   if (!genre) {
     return (
       <main className="mx-auto max-w-xl px-4 py-10">
-        <p className="text-sm text-red-600">
+        <p className="rf-danger text-sm">
           {errorMessage ?? 'ジャンルが見つかりません。'}
         </p>
-        <Link
-          to="/genres"
-          className="mt-2 inline-block text-sm text-blue-600 underline"
-        >
+        <Link to="/genres" className="rf-link mt-2 inline-block text-sm underline">
           ジャンル一覧に戻る
         </Link>
       </main>
@@ -136,21 +133,19 @@ function GenreFormulasPage() {
 
   return (
     <main className="mx-auto max-w-xl px-4 py-10">
-      <Link to="/genres" className="text-sm text-blue-600 underline">
+      <Link to="/genres" className="rf-link text-sm underline">
         ← ジャンル一覧
       </Link>
-      <h1 className="mt-2 text-2xl font-bold">{genre.name}の評価式</h1>
-      <p className="mt-1 text-sm text-neutral-600">
+      <h1 className="rf-heading mt-2 text-2xl font-semibold">{genre.name}の評価式</h1>
+      <p className="rf-muted mt-1 text-sm">
         各評価軸に重みを掛けて足し算した「カスタム評価式」を作成できます。マイナスの値を入れると、その軸を引き算として使えます。
       </p>
 
-      {errorMessage && (
-        <p className="mt-4 text-sm text-red-600">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="rf-danger mt-4 text-sm">{errorMessage}</p>}
 
       <form
         onSubmit={handleSubmit}
-        className="mt-6 flex flex-col gap-4 rounded border border-neutral-200 p-4"
+        className="rf-surface mt-6 flex flex-col gap-4 rounded p-4"
       >
         <label className="flex flex-col gap-1 text-sm">
           式の名前
@@ -159,7 +154,7 @@ function GenreFormulasPage() {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="rounded border border-neutral-300 px-3 py-2"
+            className="rf-input rounded px-3 py-2"
             placeholder="例: コスパ重視"
           />
         </label>
@@ -179,7 +174,7 @@ function GenreFormulasPage() {
                     [axis.name]: Number(e.target.value),
                   }))
                 }
-                className="w-24 rounded border border-neutral-300 px-2 py-1"
+                className="rf-input w-24 rounded px-2 py-1"
               />
             </label>
           ))}
@@ -188,33 +183,30 @@ function GenreFormulasPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="self-start rounded bg-neutral-900 px-3 py-2 text-sm text-white disabled:opacity-50"
+          className="rf-btn-primary self-start rounded px-3 py-2 text-sm disabled:opacity-50"
         >
           式を保存
         </button>
       </form>
 
-      <h2 className="mt-8 text-lg font-semibold">保存済みの式</h2>
+      <h2 className="rf-heading mt-8 text-lg font-semibold">保存済みの式</h2>
       {formulas.length === 0 && (
-        <p className="mt-2 text-sm text-neutral-500">まだ式がありません。</p>
+        <p className="rf-muted mt-2 text-sm">まだ式がありません。</p>
       )}
       <ul className="mt-2 flex flex-col gap-2">
         {formulas.map((formula) => (
-          <li
-            key={formula.id}
-            className="rounded border border-neutral-200 p-3"
-          >
+          <li key={formula.id} className="rf-surface rounded p-3">
             <div className="flex items-center justify-between">
               <span className="font-semibold">{formula.name}</span>
               <button
                 type="button"
                 onClick={() => handleDelete(formula.id)}
-                className="text-xs text-red-600 underline"
+                className="rf-danger text-xs underline"
               >
                 削除
               </button>
             </div>
-            <p className="mt-1 text-xs text-neutral-600">
+            <p className="rf-muted mt-1 text-xs">
               {Object.entries(formula.weights)
                 .filter(([, weight]) => weight !== 0)
                 .map(([axisName, weight]) => `${weight}×${axisName}`)

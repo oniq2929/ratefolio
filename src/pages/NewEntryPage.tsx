@@ -202,7 +202,7 @@ function NewEntryPage() {
   if (loadingGenres) {
     return (
       <main className="mx-auto max-w-xl px-4 py-10">
-        <p className="text-sm text-neutral-500">読み込み中...</p>
+        <p className="rf-muted text-sm">読み込み中...</p>
       </main>
     )
   }
@@ -210,11 +210,11 @@ function NewEntryPage() {
   if (genres.length === 0) {
     return (
       <main className="mx-auto max-w-xl px-4 py-10">
-        <h1 className="text-2xl font-bold">記録を作成</h1>
-        <p className="mt-4 text-sm text-neutral-600">
+        <h1 className="rf-heading text-2xl font-semibold">記録を作成</h1>
+        <p className="rf-muted mt-4 text-sm">
           記録を作るには、先にジャンルを作成してください。
         </p>
-        <Link to="/genres/new" className="mt-2 inline-block text-sm text-blue-600 underline">
+        <Link to="/genres/new" className="rf-link mt-2 inline-block text-sm underline">
           + 新しいジャンルを作成する
         </Link>
       </main>
@@ -223,11 +223,14 @@ function NewEntryPage() {
 
   return (
     <main className="mx-auto max-w-xl px-4 py-10">
-      <h1 className="text-2xl font-bold">記録を作成</h1>
+      <h1 className="rf-heading text-2xl font-semibold">記録を作成</h1>
 
       {createdEntry && (
-        <div className="mt-4 rounded border border-emerald-300 bg-emerald-50 p-4">
-          <p className="text-sm text-emerald-700">
+        <div
+          className="rf-surface mt-4 rounded p-4"
+          style={{ borderColor: 'var(--rf-success)' }}
+        >
+          <p className="rf-success text-sm">
             「{createdEntry.targetName}」を記録しました。
           </p>
           <div className="mt-2 flex justify-center">
@@ -252,7 +255,7 @@ function NewEntryPage() {
             required
             value={selectedGenreId}
             onChange={(e) => handleSelectGenre(e.target.value)}
-            className="rounded border border-neutral-300 px-3 py-2"
+            className="rf-input rounded px-3 py-2"
           >
             <option value="" disabled>
               選択してください
@@ -274,7 +277,7 @@ function NewEntryPage() {
                 required
                 value={targetName}
                 onChange={(e) => setTargetName(e.target.value)}
-                className="rounded border border-neutral-300 px-3 py-2"
+                className="rf-input rounded px-3 py-2"
                 placeholder="例: ○○そば店"
               />
             </label>
@@ -286,7 +289,7 @@ function NewEntryPage() {
                 required
                 value={entryDate}
                 onChange={(e) => setEntryDate(e.target.value)}
-                className="rounded border border-neutral-300 px-3 py-2"
+                className="rf-input rounded px-3 py-2"
               />
             </label>
 
@@ -329,7 +332,7 @@ function NewEntryPage() {
                 type="file"
                 accept="image/*"
                 onChange={(e) => handlePhotoChange(e.target.files?.[0] ?? null)}
-                className="cursor-pointer text-sm file:mr-3 file:cursor-pointer file:rounded file:border-0 file:bg-neutral-900 file:px-3 file:py-2 file:text-sm file:text-white file:hover:bg-neutral-700"
+                className="cursor-pointer text-sm file:mr-3 file:cursor-pointer file:rounded file:border-0 file:bg-[var(--rf-accent)] file:px-3 file:py-2 file:text-sm file:text-[var(--rf-accent-contrast)] file:hover:opacity-90"
               />
             </label>
 
@@ -348,7 +351,7 @@ function NewEntryPage() {
                       photoInputRef.current.value = ''
                     }
                   }}
-                  className="text-xs text-red-600 underline"
+                  className="rf-danger text-xs underline"
                 >
                   写真を削除
                 </button>
@@ -361,7 +364,7 @@ function NewEntryPage() {
                 type="text"
                 value={tagsInput}
                 onChange={(e) => setTagsInput(e.target.value)}
-                className="rounded border border-neutral-300 px-3 py-2"
+                className="rf-input rounded px-3 py-2"
                 placeholder="例: 濃厚, 大盛り"
               />
             </label>
@@ -371,7 +374,7 @@ function NewEntryPage() {
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                className="rounded border border-neutral-300 px-3 py-2"
+                className="rf-input rounded px-3 py-2"
                 rows={3}
               />
             </label>
@@ -385,14 +388,12 @@ function NewEntryPage() {
               公開する
             </label>
 
-            {errorMessage && (
-              <p className="text-sm text-red-600">{errorMessage}</p>
-            )}
+            {errorMessage && <p className="rf-danger text-sm">{errorMessage}</p>}
 
             <button
               type="submit"
               disabled={submitting}
-              className="mt-2 rounded bg-neutral-900 px-3 py-2 text-sm text-white disabled:opacity-50"
+              className="rf-btn-primary mt-2 rounded px-3 py-2 text-sm disabled:opacity-50"
             >
               記録する
             </button>

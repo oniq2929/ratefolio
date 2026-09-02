@@ -84,7 +84,7 @@ function NewGenrePage() {
 
   return (
     <main className="mx-auto max-w-sm px-4 py-10">
-      <h1 className="text-2xl font-bold">新しいジャンル</h1>
+      <h1 className="rf-heading text-2xl font-semibold">新しいジャンル</h1>
 
       <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
         <label className="flex flex-col gap-1 text-sm">
@@ -94,7 +94,7 @@ function NewGenrePage() {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="rounded border border-neutral-300 px-3 py-2"
+            className="rf-input rounded px-3 py-2"
             placeholder="例: 蕎麦"
           />
         </label>
@@ -104,7 +104,7 @@ function NewGenrePage() {
           <select
             value={scaleMax}
             onChange={(e) => setScaleMax(Number(e.target.value))}
-            className="rounded border border-neutral-300 px-3 py-2"
+            className="rf-input rounded px-3 py-2"
           >
             {SCALE_OPTIONS.map((n) => (
               <option key={n} value={n}>
@@ -125,14 +125,14 @@ function NewGenrePage() {
                 required
                 value={axisName}
                 onChange={(e) => updateAxisName(index, e.target.value)}
-                className="flex-1 rounded border border-neutral-300 px-3 py-2 text-sm"
+                className="rf-input flex-1 rounded px-3 py-2 text-sm"
                 placeholder={`例: 軸${index + 1}`}
               />
               <button
                 type="button"
                 onClick={() => removeAxis(index)}
                 disabled={axisNames.length <= MIN_AXES}
-                className="rounded border border-neutral-300 px-2 text-sm disabled:opacity-30"
+                className="rf-input rounded px-2 text-sm disabled:opacity-30"
               >
                 削除
               </button>
@@ -142,20 +142,18 @@ function NewGenrePage() {
             type="button"
             onClick={addAxis}
             disabled={axisNames.length >= MAX_AXES}
-            className="self-start rounded border border-neutral-300 px-3 py-1 text-sm disabled:opacity-30"
+            className="rf-input self-start rounded px-3 py-1 text-sm disabled:opacity-30"
           >
             + 軸を追加
           </button>
         </div>
 
-        {errorMessage && (
-          <p className="text-sm text-red-600">{errorMessage}</p>
-        )}
+        {errorMessage && <p className="rf-danger text-sm">{errorMessage}</p>}
 
         <button
           type="submit"
           disabled={submitting}
-          className="mt-2 rounded bg-neutral-900 px-3 py-2 text-sm text-white disabled:opacity-50"
+          className="rf-btn-primary mt-2 rounded px-3 py-2 text-sm disabled:opacity-50"
         >
           作成する
         </button>

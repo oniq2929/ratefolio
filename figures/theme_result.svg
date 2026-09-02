@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" font-family="sans-serif">
+  <rect width="900" height="320" fill="#ffffff"/>
+  <text x="450" y="30" text-anchor="middle" font-size="16" font-weight="bold">動作確認: 3テーマの切り替え</text>
+
+  <g>
+    <rect x="40" y="60" width="250" height="220" rx="10" fill="#eee9db" stroke="#ddd6c2"/>
+    <text x="165" y="88" text-anchor="middle" font-size="13" font-weight="bold" fill="#273432">Field Notes</text>
+    <rect x="60" y="100" width="80" height="24" rx="4" fill="#a3672b"/>
+    <rect x="150" y="100" width="80" height="24" rx="4" fill="#4b6358"/>
+    <text x="165" y="150" text-anchor="middle" font-size="11" fill="#6b6656">Fraunces + Karla</text>
+    <text x="165" y="170" text-anchor="middle" font-size="11" fill="#2f9e44">✓ 配色・フォントとも正常に反映</text>
+  </g>
+
+  <g>
+    <rect x="325" y="60" width="250" height="220" rx="10" fill="#14171f" stroke="#2a2f3d"/>
+    <text x="450" y="88" text-anchor="middle" font-size="13" font-weight="bold" fill="#e9ecf3">Radar Bright</text>
+    <rect x="345" y="100" width="80" height="24" rx="4" fill="#f2a93b"/>
+    <rect x="435" y="100" width="80" height="24" rx="4" fill="#3ed6c4"/>
+    <text x="450" y="150" text-anchor="middle" font-size="11" fill="#838a9c">Unbounded + Manrope</text>
+    <text x="450" y="170" text-anchor="middle" font-size="11" fill="#5fd88f">✓ 配色・フォントとも正常に反映</text>
+  </g>
+
+  <g>
+    <rect x="610" y="60" width="250" height="220" rx="10" fill="#eef0f3" stroke="#dfe2e8"/>
+    <text x="735" y="88" text-anchor="middle" font-size="13" font-weight="bold" fill="#262b36">Soft Grid</text>
+    <rect x="630" y="100" width="80" height="24" rx="4" fill="#6b4e8e"/>
+    <rect x="720" y="100" width="80" height="24" rx="4" fill="#3e6fbf"/>
+    <text x="735" y="150" text-anchor="middle" font-size="11" fill="#7a8090">Bricolage Grotesque + Figtree</text>
+    <text x="735" y="170" text-anchor="middle" font-size="11" fill="#2f8f5b">✓ 配色・フォントとも正常に反映</text>
+  </g>
+
+  <text x="165" y="200" text-anchor="middle" font-family="Fraunces, serif" font-size="15" fill="#273432">Ratefolio</text>
+  <text x="450" y="200" text-anchor="middle" font-family="Fraunces, serif" font-size="15" fill="#e9ecf3">Ratefolio</text>
+  <text x="735" y="200" text-anchor="middle" font-family="Fraunces, serif" font-size="15" fill="#262b36">Ratefolio</text>
+  <text x="450" y="300" text-anchor="middle" font-size="11" fill="#555">ロゴ文字はどのテーマでもFraunces(セリフ体)で統一されることを確認した</text>
+</svg>

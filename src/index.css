@@ -1,6 +1,152 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Ratefolioのテーマ変数。
+   [data-app-theme]の値によって、下の3セットのどれかが有効になる。
+   個々の画面は --rf-* 変数だけを参照し、色やフォントを直接指定しない。
+   ============================================================ */
+
+:root {
+  /* "Ratefolio"のロゴ文字だけは、テーマに関わらず常にこのフォント */
+  --rf-font-logo: "Fraunces", serif;
+}
+
+[data-app-theme="field-notes"] {
+  --rf-bg: #eee9db;
+  --rf-surface: #f8f5eb;
+  --rf-text: #273432;
+  --rf-muted: #6b6656;
+  --rf-border: #ddd6c2;
+  --rf-accent: #a3672b;
+  --rf-accent-contrast: #fff8ec;
+  --rf-accent-2: #4b6358;
+  --rf-chip-bg: #e4dcc4;
+  --rf-chip-text: #5c5236;
+  --rf-danger: #b13a2e;
+  --rf-success: #3f7a4f;
+  --rf-chart-grid: #ddd2ae;
+  --rf-font-display: "Fraunces", serif;
+  --rf-font-body: "Karla", sans-serif;
+  --rf-font-mono: "IBM Plex Mono", monospace;
+}
+
+[data-app-theme="radar-bright"] {
+  --rf-bg: #14171f;
+  --rf-surface: #1c202c;
+  --rf-text: #e9ecf3;
+  --rf-muted: #838a9c;
+  --rf-border: #2a2f3d;
+  --rf-accent: #f2a93b;
+  --rf-accent-contrast: #14171f;
+  --rf-accent-2: #3ed6c4;
+  --rf-chip-bg: #262b38;
+  --rf-chip-text: #3ed6c4;
+  --rf-danger: #ff7a7a;
+  --rf-success: #5fd88f;
+  --rf-chart-grid: #2f3444;
+  --rf-font-display: "Unbounded", sans-serif;
+  --rf-font-body: "Manrope", sans-serif;
+  --rf-font-mono: "IBM Plex Mono", monospace;
+}
+
+[data-app-theme="soft-grid"] {
+  --rf-bg: #eef0f3;
+  --rf-surface: #ffffff;
+  --rf-text: #262b36;
+  --rf-muted: #7a8090;
+  --rf-border: #dfe2e8;
+  --rf-accent: #6b4e8e;
+  --rf-accent-contrast: #ffffff;
+  --rf-accent-2: #3e6fbf;
+  --rf-chip-bg: #eee8f5;
+  --rf-chip-text: #6b4e8e;
+  --rf-danger: #c0392b;
+  --rf-success: #2f8f5b;
+  --rf-chart-grid: #dfe2e8;
+  --rf-font-display: "Bricolage Grotesque", sans-serif;
+  --rf-font-body: "Figtree", sans-serif;
+  --rf-font-mono: "Space Mono", monospace;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
+  background: var(--rf-bg);
+  color: var(--rf-text);
+  font-family: var(--rf-font-body);
+}
+
+/* ============================================================
+   共通ユーティリティ。Tailwindの色系クラス(bg-white等)の代わりに、
+   テーマ変数を参照するこれらのクラスを画面側で使う。
+   ============================================================ */
+
+.rf-logo {
+  font-family: var(--rf-font-logo);
+}
+
+.rf-heading {
+  font-family: var(--rf-font-display);
+}
+
+.rf-muted {
+  color: var(--rf-muted);
+}
+
+.rf-accent {
+  color: var(--rf-accent);
+}
+
+.rf-accent-2 {
+  color: var(--rf-accent-2);
+}
+
+.rf-danger {
+  color: var(--rf-danger);
+}
+
+.rf-success {
+  color: var(--rf-success);
+}
+
+.rf-mono {
+  font-family: var(--rf-font-mono);
+}
+
+.rf-surface {
+  background: var(--rf-surface);
+  border: 1px solid var(--rf-border);
+}
+
+.rf-border {
+  border-color: var(--rf-border);
+}
+
+.rf-chip {
+  background: var(--rf-chip-bg);
+  color: var(--rf-chip-text);
+}
+
+.rf-input {
+  background: var(--rf-surface);
+  border: 1px solid var(--rf-border);
+  color: var(--rf-text);
+}
+
+.rf-input::placeholder {
+  color: var(--rf-muted);
+}
+
+.rf-btn-primary {
+  background: var(--rf-accent);
+  color: var(--rf-accent-contrast);
+}
+
+.rf-btn-ghost {
+  background: var(--rf-chip-bg);
+  color: var(--rf-text);
+}
+
+.rf-link {
+  color: var(--rf-accent);
 }

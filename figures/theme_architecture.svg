@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" font-family="sans-serif">
+  <defs>
+    <marker id="arrow8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+  </defs>
+  <rect width="900" height="480" fill="#ffffff"/>
+  <text x="450" y="30" text-anchor="middle" font-size="18" font-weight="bold">テーマ切り替えの仕組み</text>
+
+  <rect x="30" y="60" width="220" height="70" rx="8" fill="#e8f0fe" stroke="#4c6ef5"/>
+  <text x="140" y="88" text-anchor="middle" font-size="13" font-weight="bold">localStorage</text>
+  <text x="140" y="106" text-anchor="middle" font-size="11">"ratefolio-theme"キーに</text>
+  <text x="140" y="120" text-anchor="middle" font-size="11">選択中のテーマ名を保存</text>
+
+  <rect x="330" y="60" width="240" height="70" rx="8" fill="#fff3bf" stroke="#f59f00"/>
+  <text x="450" y="85" text-anchor="middle" font-size="13" font-weight="bold">&lt;html data-app-theme&gt;</text>
+  <text x="450" y="103" text-anchor="middle" font-size="11">index.htmlの初期化スクリプトが</text>
+  <text x="450" y="119" text-anchor="middle" font-size="11">描画前に属性をセット(ちらつき防止)</text>
+
+  <line x1="250" y1="95" x2="328" y2="95" stroke="#333" stroke-width="1.5" marker-end="url(#arrow8)"/>
+
+  <rect x="640" y="60" width="230" height="70" rx="8" fill="#f3f0ff" stroke="#7048e8"/>
+  <text x="755" y="85" text-anchor="middle" font-size="13" font-weight="bold">ThemeContext</text>
+  <text x="755" y="103" text-anchor="middle" font-size="11">setTheme()実行時に、同じ属性を</text>
+  <text x="755" y="119" text-anchor="middle" font-size="11">再設定+localStorageを更新</text>
+
+  <line x1="570" y1="95" x2="638" y2="95" stroke="#333" stroke-width="1.5" marker-end="url(#arrow8)"/>
+  <line x1="450" y1="130" x2="450" y2="170" stroke="#333" stroke-width="1.5" marker-end="url(#arrow8)"/>
+
+  <rect x="180" y="180" width="540" height="90" rx="8" fill="#d3f9d8" stroke="#2f9e44"/>
+  <text x="450" y="208" text-anchor="middle" font-size="13" font-weight="bold">index.cssのCSS変数ブロック</text>
+  <text x="450" y="230" text-anchor="middle" font-size="12">[data-app-theme="field-notes"] / "radar-bright" / "soft-grid"</text>
+  <text x="450" y="250" text-anchor="middle" font-size="12">それぞれが --rf-bg, --rf-accent, --rf-font-display 等を再定義</text>
+
+  <line x1="450" y1="270" x2="450" y2="308" stroke="#333" stroke-width="1.5" marker-end="url(#arrow8)"/>
+
+  <rect x="80" y="320" width="330" height="90" rx="8" fill="#ffffff" stroke="#adb5bd"/>
+  <text x="245" y="348" text-anchor="middle" font-size="13" font-weight="bold">画面側: rf-* ユーティリティクラス</text>
+  <text x="245" y="370" text-anchor="middle" font-size="11">.rf-surface, .rf-btn-primary, .rf-heading 等</text>
+  <text x="245" y="388" text-anchor="middle" font-size="11">Tailwindのレイアウトクラスと併用</text>
+
+  <rect x="490" y="320" width="330" height="90" rx="8" fill="#ffffff" stroke="#adb5bd"/>
+  <text x="655" y="348" text-anchor="middle" font-size="13" font-weight="bold">RadarChart(SVG)</text>
+  <text x="655" y="370" text-anchor="middle" font-size="11">stroke/fillにvar(--rf-accent)等を直接指定</text>
+  <text x="655" y="388" text-anchor="middle" font-size="11">テーマ変更時、再描画なしで自動追従</text>
+
+  <text x="450" y="450" text-anchor="middle" font-size="11" fill="#555">"Ratefolio"のロゴ文字だけは --rf-font-logo(Fraunces固定)を使い、テーマの影響を受けない</text>
+</svg>

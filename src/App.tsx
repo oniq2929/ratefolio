@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 import RequireAuth from './components/RequireAuth'
 import AppLayout from './components/AppLayout'
 import HomePage from './pages/HomePage'
@@ -13,27 +14,29 @@ import PublicPage from './pages/PublicPage'
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route element={<RequireAuth />}>
-            <Route element={<AppLayout />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/genres" element={<GenresPage />} />
-              <Route path="/genres/new" element={<NewGenrePage />} />
-              <Route
-                path="/genres/:genreId/formulas"
-                element={<GenreFormulasPage />}
-              />
-              <Route path="/entries" element={<EntriesPage />} />
-              <Route path="/entries/new" element={<NewEntryPage />} />
-              <Route path="/public" element={<PublicPage />} />
+    <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route element={<RequireAuth />}>
+              <Route element={<AppLayout />}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/genres" element={<GenresPage />} />
+                <Route path="/genres/new" element={<NewGenrePage />} />
+                <Route
+                  path="/genres/:genreId/formulas"
+                  element={<GenreFormulasPage />}
+                />
+                <Route path="/entries" element={<EntriesPage />} />
+                <Route path="/entries/new" element={<NewEntryPage />} />
+                <Route path="/public" element={<PublicPage />} />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }
 

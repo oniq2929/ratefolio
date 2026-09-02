@@ -49,46 +49,39 @@ function GenresPage() {
   return (
     <main className="mx-auto max-w-xl px-4 py-10">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">ジャンル管理</h1>
+        <h1 className="rf-heading text-2xl font-semibold">ジャンル管理</h1>
         <Link
           to="/genres/new"
-          className="rounded bg-neutral-900 px-3 py-2 text-sm text-white"
+          className="rf-btn-primary rounded px-3 py-2 text-sm"
         >
           + 新しいジャンル
         </Link>
       </div>
 
-      {loading && <p className="mt-6 text-sm text-neutral-500">読み込み中...</p>}
-      {errorMessage && (
-        <p className="mt-6 text-sm text-red-600">{errorMessage}</p>
-      )}
+      {loading && <p className="rf-muted mt-6 text-sm">読み込み中...</p>}
+      {errorMessage && <p className="rf-danger mt-6 text-sm">{errorMessage}</p>}
 
       {!loading && genres.length === 0 && !errorMessage && (
-        <p className="mt-6 text-sm text-neutral-500">
+        <p className="rf-muted mt-6 text-sm">
           まだジャンルがありません。「+ 新しいジャンル」から作成してください。
         </p>
       )}
 
       <ul className="mt-6 flex flex-col gap-3">
         {genres.map((genre) => (
-          <li
-            key={genre.id}
-            className="rounded border border-neutral-200 p-4"
-          >
+          <li key={genre.id} className="rf-surface rounded p-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold">{genre.name}</h2>
+              <h2 className="rf-heading font-semibold">{genre.name}</h2>
               <button
                 type="button"
                 onClick={() => handleDelete(genre.id)}
-                className="text-xs text-red-600 underline"
+                className="rf-danger text-xs underline"
               >
                 削除
               </button>
             </div>
-            <p className="mt-1 text-xs text-neutral-500">
-              {genre.scale_max}段階評価
-            </p>
-            <p className="mt-2 text-sm text-neutral-700">
+            <p className="rf-muted mt-1 text-xs">{genre.scale_max}段階評価</p>
+            <p className="mt-2 text-sm">
               {[...genre.axes]
                 .sort((a, b) => a.sort_order - b.sort_order)
                 .map((axis) => axis.name)
@@ -96,7 +89,7 @@ function GenresPage() {
             </p>
             <Link
               to={`/genres/${genre.id}/formulas`}
-              className="mt-2 inline-block text-xs text-blue-600 underline"
+              className="rf-link mt-2 inline-block text-xs underline"
             >
               計算式を管理
             </Link>
