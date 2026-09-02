@@ -6,14 +6,14 @@ function ThemeSwitcher() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="flex gap-1 text-xs">
+    <div className="flex flex-wrap gap-1 text-xs">
       {THEME_ORDER.map((name) => (
         <button
           key={name}
           type="button"
           onClick={() => setTheme(name)}
           aria-pressed={theme === name}
-          className="rounded px-2 py-1"
+          className="shrink-0 rounded px-2 py-1"
           style={{
             background: theme === name ? 'var(--rf-accent)' : 'var(--rf-chip-bg)',
             color: theme === name ? 'var(--rf-accent-contrast)' : 'var(--rf-text)',
