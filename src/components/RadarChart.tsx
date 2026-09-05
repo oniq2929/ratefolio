@@ -14,9 +14,29 @@ interface RadarChartProps {
 // 目盛りとして薄く表示する同心多角形の、外周に対する半径の割合
 const GRID_RING_RATIOS = [1 / 3, 2 / 3, 1]
 
+// 軸ラベル用に外周にとっておく余白。ホームのヒーローで軸アイコンを
+// 重ねて表示する際、この値を使って同じ座標系で位置を計算する
+export const RADAR_LABEL_MARGIN = 36
+
+// 中心・外周半径・軸数・何番目の軸かから、その頂点の座標を求める
+// (RadarChart内部の計算と同じ考え方を、ホームのヒーローの軸アイコン配置にも使い回す)
+export function radarPointAt(
+  size: number,
+  axisCount: number,
+  index: number,
+  radius: number,
+) {
+  const center = size / 2
+  const angle = -Math.PI / 2 + (index * 2 * Math.PI) / axisCount
+  return {
+    x: center + radius * Math.cos(angle),
+    y: center + radius * Math.sin(angle),
+  }
+}
+
 function RadarChart({ axes, scaleMax, size = 260, showLabels = true }: RadarChartProps) {
   const center = size / 2
-  const maxRadius = center - 36
+  const maxRadius = center - RADAR_LABEL_MARGIN
 
   const angleForIndex = (index: number) =>
     -Math.PI / 2 + (index * 2 * Math.PI) / axes.length

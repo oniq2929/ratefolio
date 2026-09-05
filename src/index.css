@@ -25,6 +25,10 @@
   --rf-danger: #b13a2e;
   --rf-success: #3f7a4f;
   --rf-chart-grid: #ddd2ae;
+  --rf-header-bg: var(--rf-surface);
+  --rf-header-text: var(--rf-text);
+  --rf-header-muted: var(--rf-muted);
+  --rf-header-border: var(--rf-border);
   --rf-font-display: "Fraunces", serif;
   --rf-font-body: "Karla", sans-serif;
   --rf-font-mono: "IBM Plex Mono", monospace;
@@ -44,6 +48,10 @@
   --rf-danger: #ff7a7a;
   --rf-success: #5fd88f;
   --rf-chart-grid: #2f3444;
+  --rf-header-bg: var(--rf-surface);
+  --rf-header-text: var(--rf-text);
+  --rf-header-muted: var(--rf-muted);
+  --rf-header-border: var(--rf-border);
   --rf-font-display: "Unbounded", sans-serif;
   --rf-font-body: "Manrope", sans-serif;
   --rf-font-mono: "IBM Plex Mono", monospace;
@@ -63,25 +71,34 @@
   --rf-danger: #c0392b;
   --rf-success: #2f8f5b;
   --rf-chart-grid: #dfe2e8;
+  --rf-header-bg: var(--rf-surface);
+  --rf-header-text: var(--rf-text);
+  --rf-header-muted: var(--rf-muted);
+  --rf-header-border: var(--rf-border);
   --rf-font-display: "Bricolage Grotesque", sans-serif;
   --rf-font-body: "Figtree", sans-serif;
   --rf-font-mono: "Space Mono", monospace;
 }
 
 [data-app-theme="quiet-slate"] {
-  --rf-bg: #aeb1b7;
-  --rf-surface: #eef0f2;
+  --rf-bg: #f1f2f4;
+  --rf-surface: #ffffff;
   --rf-text: #20232a;
   --rf-muted: #676b73;
-  --rf-border: #d5d7da;
+  --rf-border: #e2e3e6;
   --rf-accent: #4c6883;
   --rf-accent-contrast: #ffffff;
   --rf-accent-2: #96805f;
-  --rf-chip-bg: #e1e3e6;
+  --rf-chip-bg: #eceef0;
   --rf-chip-text: #3c4854;
   --rf-danger: #a24236;
   --rf-success: #436e54;
-  --rf-chart-grid: #d5d7da;
+  --rf-chart-grid: #e2e3e6;
+  /* ヘッダー(ロゴ+テーマタブ)だけは、ページ本体より濃いグレーにする */
+  --rf-header-bg: #2b2e34;
+  --rf-header-text: #eef0f2;
+  --rf-header-muted: #a6a9b0;
+  --rf-header-border: #3d4149;
   --rf-font-display: "Inter", sans-serif;
   --rf-font-body: "Inter", sans-serif;
   --rf-font-mono: "IBM Plex Mono", monospace;

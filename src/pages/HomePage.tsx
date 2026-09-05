@@ -2,16 +2,22 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   ChevronRight,
+  Droplet,
   FileText,
   FolderKanban,
+  Heart,
+  Lightbulb,
+  MessageCircle,
   PenLine,
   Quote,
+  Smile,
+  Sparkle,
   Trash2,
   Users,
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import RadarChart from '../components/RadarChart'
+import RadarChart, { RADAR_LABEL_MARGIN, radarPointAt } from '../components/RadarChart'
 import type { Entry } from '../types/database'
 
 // 使用頻度が高い順(記録一覧より、次に見る場所が多いもの)に並べる
@@ -51,6 +57,18 @@ const HERO_SAMPLE_TOTAL = (
   HERO_SAMPLE_AXES.reduce((sum, axis) => sum + axis.score, 0) /
   HERO_SAMPLE_AXES.length
 ).toFixed(1)
+const HERO_CHART_SIZE = 150
+
+// 軸名の代わりに置く装飾アイコン。実際の評価軸とは対応していない見た目のみの飾り
+const HERO_AXIS_ICONS = [Heart, Lightbulb, Droplet, Smile, MessageCircle, Sparkle]
+const HERO_AXIS_ICON_COLORS = [
+  'var(--rf-accent)',
+  'var(--rf-accent-2)',
+  'var(--rf-success)',
+  'var(--rf-accent-2)',
+  'var(--rf-danger)',
+  'var(--rf-accent)',
+]
 
 type RecentPublicEntry = Pick<
   Entry,
@@ -159,13 +177,40 @@ function HomePage() {
             <p className="rf-muted mt-1 text-xs">自分だけの記録帳</p>
           </div>
 
-          <div className="flex-shrink-0">
+          <div
+            className="relative flex-shrink-0"
+            style={{ width: HERO_CHART_SIZE, height: HERO_CHART_SIZE }}
+          >
             <RadarChart
               axes={HERO_SAMPLE_AXES}
               scaleMax={HERO_SAMPLE_SCALE_MAX}
-              size={124}
+              size={HERO_CHART_SIZE}
               showLabels={false}
             />
+            {HERO_SAMPLE_AXES.map((axis, i) => {
+              const Icon = HERO_AXIS_ICONS[i % HERO_AXIS_ICONS.length]
+              const maxRadius = HERO_CHART_SIZE / 2 - RADAR_LABEL_MARGIN
+              const point = radarPointAt(
+                HERO_CHART_SIZE,
+                HERO_SAMPLE_AXES.length,
+                i,
+                maxRadius + 15,
+              )
+              return (
+                <Icon
+                  key={axis.name}
+                  size={14}
+                  className="absolute"
+                  style={{
+                    left: point.x,
+                    top: point.y,
+                    transform: 'translate(-50%, -50%)',
+                    color: HERO_AXIS_ICON_COLORS[i % HERO_AXIS_ICON_COLORS.length],
+                  }}
+                  aria-hidden="true"
+                />
+              )
+            })}
           </div>
         </div>
       </div>

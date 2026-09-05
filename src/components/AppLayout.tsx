@@ -7,7 +7,14 @@ function AppLayout() {
 
   return (
     <div>
-      <header className="rf-surface border-b" style={{ borderColor: 'var(--rf-border)' }}>
+      <header
+        className="border-b"
+        style={{
+          background: 'var(--rf-header-bg)',
+          borderColor: 'var(--rf-header-border)',
+          color: 'var(--rf-header-text)',
+        }}
+      >
         <div className="mx-auto flex max-w-2xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center justify-between gap-4">
             <Link to="/" className="rf-logo text-3xl font-semibold tracking-tight">
@@ -16,7 +23,8 @@ function AppLayout() {
             <button
               type="button"
               onClick={() => signOut()}
-              className="rf-muted text-sm underline sm:hidden"
+              className="text-sm underline sm:hidden"
+              style={{ color: 'var(--rf-header-muted)' }}
             >
               ログアウト
             </button>
@@ -26,7 +34,8 @@ function AppLayout() {
             <button
               type="button"
               onClick={() => signOut()}
-              className="rf-muted hidden text-sm underline sm:inline"
+              className="hidden text-sm underline sm:inline"
+              style={{ color: 'var(--rf-header-muted)' }}
             >
               ログアウト
             </button>
