@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
+  Beer,
   ChevronRight,
   Droplet,
   FileText,
   FolderKanban,
+  GlassWater,
   Heart,
   Lightbulb,
   MessageCircle,
@@ -160,23 +162,41 @@ function HomePage() {
           <span className="text-xs opacity-70"> / {HERO_SAMPLE_SCALE_MAX}</span>
         </span>
 
-        <p className="rf-heading relative pr-16 text-lg leading-snug font-semibold tracking-tight">
-          <span className="inline-block">綴るほど</span>
-          <span className="inline-block">
-            <span className="rf-accent">「好き」</span>の
-          </span>
-          <span className="inline-block">解像度が</span>
-          <span className="inline-block">上がっていく</span>
-        </p>
-        <p className="rf-muted relative mt-1 text-xs">自分だけの記録帳</p>
+        {/* 見出しは背面のイラスト/チャートより手前(z-10)に置き、
+            間隔を詰めて多少重なっても文字が隠れないようにする */}
+        <div className="relative z-10">
+          <p className="rf-heading pr-16 text-lg leading-snug font-semibold tracking-tight">
+            <span className="inline-block">綴るほど</span>
+            <span className="inline-block">
+              <span className="rf-accent">「好き」</span>の
+            </span>
+            <span className="inline-block">解像度が</span>
+            <span className="inline-block">上がっていく</span>
+          </p>
+          <p className="rf-muted mt-1 text-xs">自分だけの記録帳</p>
+        </div>
 
-        <div className="relative mt-4 flex items-center justify-center gap-3">
-          <Soup
-            size={40}
-            className="flex-shrink-0 opacity-70"
-            style={{ color: 'var(--rf-accent-2)' }}
-            aria-hidden="true"
-          />
+        <div className="relative z-0 -mt-2 flex items-center justify-center gap-1">
+          <div className="relative flex-shrink-0" style={{ width: 48, height: HERO_CHART_SIZE }}>
+            <Soup
+              size={32}
+              className="absolute opacity-70"
+              style={{ left: 6, top: 12, transform: 'rotate(-12deg)', color: 'var(--rf-accent-2)' }}
+              aria-hidden="true"
+            />
+            <GlassWater
+              size={24}
+              className="absolute opacity-60"
+              style={{ left: 22, top: 66, transform: 'rotate(16deg)', color: 'var(--rf-accent)' }}
+              aria-hidden="true"
+            />
+            <Beer
+              size={26}
+              className="absolute opacity-65"
+              style={{ left: 2, top: 116, transform: 'rotate(-6deg)', color: 'var(--rf-accent-2)' }}
+              aria-hidden="true"
+            />
+          </div>
           <div
             className="relative flex-shrink-0"
             style={{ width: HERO_CHART_SIZE, height: HERO_CHART_SIZE }}
