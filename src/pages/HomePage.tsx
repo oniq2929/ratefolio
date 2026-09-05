@@ -62,7 +62,7 @@ const HERO_SAMPLE_TOTAL = (
   HERO_SAMPLE_AXES.reduce((sum, axis) => sum + axis.score, 0) /
   HERO_SAMPLE_AXES.length
 ).toFixed(1)
-const HERO_CHART_SIZE = 216
+const HERO_CHART_SIZE = 232
 
 // 軸名の代わりに置く装飾アイコン。実際の評価軸とは対応していない見た目のみの飾り
 const HERO_AXIS_ICONS = [Heart, Lightbulb, Droplet, Smile, MessageCircle, Sparkle]
@@ -157,18 +157,10 @@ function HomePage() {
           style={{ background: 'var(--rf-accent-2)', opacity: 0.2 }}
           aria-hidden="true"
         />
-        <span
-          className="rf-chip absolute top-4 right-4 rounded-full px-2.5 py-1 font-bold"
-          style={{ transform: 'rotate(-4deg)' }}
-        >
-          <span className="text-sm">{HERO_SAMPLE_TOTAL}</span>
-          <span className="text-xs opacity-70"> / {HERO_SAMPLE_SCALE_MAX}</span>
-        </span>
-
         {/* 見出しは背面のイラスト/チャートより手前(z-10)に置き、
             間隔を詰めて多少重なっても文字が隠れないようにする */}
         <div className="relative z-10">
-          <p className="rf-heading pr-16 text-lg leading-snug font-semibold tracking-tight">
+          <p className="rf-heading text-lg leading-snug font-semibold tracking-tight">
             <span className="inline-block">綴るほど</span>
             <span className="inline-block">
               <span className="rf-accent">「好き」</span>の
@@ -179,47 +171,53 @@ function HomePage() {
           <p className="rf-muted mt-1 text-xs">自分だけの記録帳</p>
         </div>
 
-        <div className="relative z-0 -mt-2 flex items-center justify-center gap-1">
-          <div className="relative flex-shrink-0" style={{ width: 96, height: HERO_CHART_SIZE }}>
-            <GlassWater
-              size={26}
-              className="absolute opacity-60"
-              style={{ left: 50, top: 4, transform: 'rotate(14deg)', color: 'var(--rf-accent)' }}
-              aria-hidden="true"
-            />
-            <Soup
-              size={32}
-              className="absolute opacity-70"
-              style={{ left: 6, top: 14, transform: 'rotate(-12deg)', color: 'var(--rf-accent-2)' }}
-              aria-hidden="true"
-            />
-            <Beer
-              size={28}
-              className="absolute opacity-65"
-              style={{ left: 4, top: 82, transform: 'rotate(-8deg)', color: 'var(--rf-accent-2)' }}
-              aria-hidden="true"
-            />
+        <div className="relative z-0 -mt-6 flex items-start gap-1">
+          {/* 左側: スコアと、大きさをばらけさせた食べ物アイコン */}
+          <div className="relative min-w-0 flex-1" style={{ height: HERO_CHART_SIZE }}>
+            <div className="rf-chip mt-9 inline-flex items-baseline gap-0.5 rounded-xl px-2.5 py-1.5">
+              <span className="rf-heading text-base font-bold">{HERO_SAMPLE_TOTAL}</span>
+              <span className="text-xs opacity-70">/ {HERO_SAMPLE_SCALE_MAX}</span>
+            </div>
             <Pizza
               size={26}
               className="absolute opacity-60"
-              style={{ left: 54, top: 64, transform: 'rotate(10deg)', color: 'var(--rf-danger)' }}
+              style={{ left: 6, top: 70, transform: 'rotate(-9deg)', color: 'var(--rf-danger)' }}
               aria-hidden="true"
             />
-            <Coffee
-              size={24}
+            <GlassWater
+              size={22}
               className="absolute opacity-60"
-              style={{ left: 52, top: 134, transform: 'rotate(8deg)', color: 'var(--rf-accent)' }}
+              style={{ left: 46, top: 68, transform: 'rotate(18deg)', color: 'var(--rf-accent)' }}
+              aria-hidden="true"
+            />
+            <Soup
+              size={38}
+              className="absolute opacity-70"
+              style={{ left: 4, top: 110, transform: 'rotate(-14deg)', color: 'var(--rf-accent-2)' }}
               aria-hidden="true"
             />
             <Cookie
-              size={26}
+              size={20}
               className="absolute opacity-65"
-              style={{ left: 10, top: 150, transform: 'rotate(-6deg)', color: 'var(--rf-accent-2)' }}
+              style={{ left: 44, top: 116, transform: 'rotate(14deg)', color: 'var(--rf-accent-2)' }}
+              aria-hidden="true"
+            />
+            <Beer
+              size={30}
+              className="absolute opacity-65"
+              style={{ left: 40, top: 156, transform: 'rotate(10deg)', color: 'var(--rf-accent-2)' }}
+              aria-hidden="true"
+            />
+            <Coffee
+              size={26}
+              className="absolute opacity-60"
+              style={{ left: 8, top: 178, transform: 'rotate(7deg)', color: 'var(--rf-accent)' }}
               aria-hidden="true"
             />
           </div>
+          {/* チャート外周の余白ぶんだけ左に寄せ、狭い画面でも左カラムの幅を確保する */}
           <div
-            className="relative flex-shrink-0"
+            className="relative -ml-3 flex-shrink-0"
             style={{ width: HERO_CHART_SIZE, height: HERO_CHART_SIZE }}
           >
             <RadarChart
