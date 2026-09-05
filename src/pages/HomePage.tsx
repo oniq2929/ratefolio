@@ -10,6 +10,7 @@ import {
   MessageCircle,
   PenLine,
   Smile,
+  Soup,
   Sparkle,
   Trash2,
   Users,
@@ -56,7 +57,7 @@ const HERO_SAMPLE_TOTAL = (
   HERO_SAMPLE_AXES.reduce((sum, axis) => sum + axis.score, 0) /
   HERO_SAMPLE_AXES.length
 ).toFixed(1)
-const HERO_CHART_SIZE = 176
+const HERO_CHART_SIZE = 216
 
 // 軸名の代わりに置く装飾アイコン。実際の評価軸とは対応していない見た目のみの飾り
 const HERO_AXIS_ICONS = [Heart, Lightbulb, Droplet, Smile, MessageCircle, Sparkle]
@@ -143,8 +144,8 @@ function HomePage() {
 
   return (
     <main className="mx-auto max-w-xl px-4 py-10">
-      {/* ヒーロー: キャッチコピーと、実物のRadarChart(見本データ・ラベル非表示)を
-          横並びにして、スクロールなしで「記録を作成する」まで届く高さに収める */}
+      {/* ヒーロー: 見出しをカード全幅で上に置き、レーダーチャートは
+          その下に大きく表示する(見出しの折り返し数と、図の大きさを両立させるため) */}
       <div className="rf-surface relative overflow-hidden rounded-2xl p-5">
         <div
           className="pointer-events-none absolute -top-8 -right-8 h-32 w-32 rounded-full blur-2xl"
@@ -152,25 +153,30 @@ function HomePage() {
           aria-hidden="true"
         />
         <span
-          className="rf-chip absolute top-4 right-4 rounded-full px-2.5 py-1 text-sm font-bold"
+          className="rf-chip absolute top-4 right-4 rounded-full px-2.5 py-1 font-bold"
           style={{ transform: 'rotate(-4deg)' }}
         >
-          {HERO_SAMPLE_TOTAL}
+          <span className="text-sm">{HERO_SAMPLE_TOTAL}</span>
+          <span className="text-xs opacity-70"> / {HERO_SAMPLE_SCALE_MAX}</span>
         </span>
 
-        <div className="relative flex items-center gap-3">
-          <div className="min-w-0 flex-1">
-            <p className="rf-heading text-base leading-snug font-semibold tracking-tight">
-              <span className="inline-block">綴るほど</span>
-              <span className="inline-block">
-                <span className="rf-accent">「好き」</span>の
-              </span>
-              <span className="inline-block">解像度が</span>
-              <span className="inline-block">上がっていく</span>
-            </p>
-            <p className="rf-muted mt-1 text-xs">自分だけの記録帳</p>
-          </div>
+        <p className="rf-heading relative pr-16 text-lg leading-snug font-semibold tracking-tight">
+          <span className="inline-block">綴るほど</span>
+          <span className="inline-block">
+            <span className="rf-accent">「好き」</span>の
+          </span>
+          <span className="inline-block">解像度が</span>
+          <span className="inline-block">上がっていく</span>
+        </p>
+        <p className="rf-muted relative mt-1 text-xs">自分だけの記録帳</p>
 
+        <div className="relative mt-4 flex items-center justify-center gap-3">
+          <Soup
+            size={40}
+            className="flex-shrink-0 opacity-70"
+            style={{ color: 'var(--rf-accent-2)' }}
+            aria-hidden="true"
+          />
           <div
             className="relative flex-shrink-0"
             style={{ width: HERO_CHART_SIZE, height: HERO_CHART_SIZE }}
@@ -193,7 +199,7 @@ function HomePage() {
               return (
                 <Icon
                   key={axis.name}
-                  size={14}
+                  size={16}
                   className="absolute"
                   style={{
                     left: point.x,
