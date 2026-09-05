@@ -69,19 +69,19 @@
 }
 
 [data-app-theme="quiet-slate"] {
-  --rf-bg: #e6e7ea;
-  --rf-surface: #f6f6f8;
-  --rf-text: #2b2f36;
-  --rf-muted: #6b7280;
-  --rf-border: #d6d8dc;
-  --rf-accent: #55708a;
+  --rf-bg: #aeb1b7;
+  --rf-surface: #eef0f2;
+  --rf-text: #20232a;
+  --rf-muted: #676b73;
+  --rf-border: #d5d7da;
+  --rf-accent: #4c6883;
   --rf-accent-contrast: #ffffff;
-  --rf-accent-2: #9c8465;
-  --rf-chip-bg: #dfe1e5;
-  --rf-chip-text: #43505c;
-  --rf-danger: #a8493f;
-  --rf-success: #47765a;
-  --rf-chart-grid: #d7dadf;
+  --rf-accent-2: #96805f;
+  --rf-chip-bg: #e1e3e6;
+  --rf-chip-text: #3c4854;
+  --rf-danger: #a24236;
+  --rf-success: #436e54;
+  --rf-chart-grid: #d5d7da;
   --rf-font-display: "Inter", sans-serif;
   --rf-font-body: "Inter", sans-serif;
   --rf-font-mono: "IBM Plex Mono", monospace;
