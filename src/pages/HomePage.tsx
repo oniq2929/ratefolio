@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   Beer,
@@ -48,25 +48,15 @@ const SECONDARY_NAV_ITEMS = [
 
 // ホームのヒーロー部分に出す、レーダーチャートの見本用ダミーデータ
 // (実際の記録データとは無関係。「多軸で評価するアプリ」だと一目で伝えるための例)
-// 軸ごとの差が大きいほうが「評価が分かれている」感じが出るため、
-// あえて高低差をつけた尖った形にしている
+// 正六角形だと図として単調なので高低差はつけるが、高い軸と低い軸が
+// 交互に並ぶとギザギザして不自然になるため、低い軸は1箇所にまとめている
 const HERO_SAMPLE_AXES = [
-  { name: '満足度', score: 10 },
-  { name: 'コスパ', score: 5 },
-  { name: '使いやすさ', score: 9.5 },
-  { name: 'また使いたい', score: 4.5 },
-  { name: '見た目', score: 9.5 },
-  { name: '独自性', score: 9 },
-]
-
-// 背面に薄く重ねる、色違いのもう1つのポリゴン(装飾)
-const HERO_OVERLAY_AXES = [
-  { name: '満足度', score: 6 },
-  { name: 'コスパ', score: 9.5 },
-  { name: '使いやすさ', score: 4.5 },
-  { name: 'また使いたい', score: 9 },
-  { name: '見た目', score: 5 },
-  { name: '独自性', score: 5.5 },
+  { name: '満足度', score: 9.5 },
+  { name: 'コスパ', score: 7 },
+  { name: '使いやすさ', score: 9 },
+  { name: 'また使いたい', score: 5.5 },
+  { name: '見た目', score: 8 },
+  { name: '独自性', score: 8.5 },
 ]
 const HERO_SAMPLE_SCALE_MAX = 10
 const HERO_SAMPLE_TOTAL = (
@@ -244,8 +234,8 @@ function HomePage() {
               size={22}
               className="absolute"
               style={{
-                left: 72,
-                top: 190,
+                left: 78,
+                top: 200,
                 opacity: 0.45,
                 transform: 'rotate(28deg)',
                 color: 'var(--rf-success)',
@@ -258,24 +248,6 @@ function HomePage() {
             className="relative mt-5 -ml-4 flex-shrink-0"
             style={{ width: HERO_CHART_SIZE, height: HERO_CHART_SIZE }}
           >
-            {/* 背面: --rf-accentを上書きして色違いのポリゴンを重ねる */}
-            <div
-              className="absolute inset-0"
-              style={
-                {
-                  '--rf-accent': 'var(--rf-accent-2)',
-                  opacity: 0.55,
-                } as CSSProperties
-              }
-              aria-hidden="true"
-            >
-              <RadarChart
-                axes={HERO_OVERLAY_AXES}
-                scaleMax={HERO_SAMPLE_SCALE_MAX}
-                size={HERO_CHART_SIZE}
-                showLabels={false}
-              />
-            </div>
             <RadarChart
               axes={HERO_SAMPLE_AXES}
               scaleMax={HERO_SAMPLE_SCALE_MAX}
