@@ -2,27 +2,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 
-const NAV_ITEMS = [
-  {
-    to: '/genres',
-    title: 'ジャンルを管理する',
-    description: '評価軸・スケールの作成/編集',
-  },
-  {
-    to: '/entries/new',
-    title: '記録を作成する',
-    description: 'スコア入力とレーダーチャート',
-  },
-  {
-    to: '/entries',
-    title: '記録一覧を見る',
-    description: '絞り込み・検索・並び替え',
-  },
-  {
-    to: '/public',
-    title: 'みんなの公開記録を見る',
-    description: 'フィード / ランキング',
-  },
+// 使用頻度が高い順(記録一覧より、次に見る場所が多いもの)に並べる
+const SECONDARY_NAV_ITEMS = [
+  { to: '/entries', title: '記録一覧' },
+  { to: '/public', title: 'みんなの記録' },
+  { to: '/genres', title: 'ジャンル管理' },
 ]
 
 function HomePage() {
@@ -64,22 +48,32 @@ function HomePage() {
 
   return (
     <main className="mx-auto max-w-xl px-4 py-10">
-      <p className="rf-heading text-2xl leading-snug font-medium text-balance">
-        紡ぐほど<span className="rf-accent">「好き」</span>の解像度が上がっていく、
-        <br className="hidden sm:block" />
-        自分だけの記録帳。
+      <p className="rf-heading text-2xl leading-snug font-medium">
+        <span className="inline-block">紡ぐほど</span>
+        <span className="inline-block">
+          <span className="rf-accent">「好き」</span>の解像度が
+        </span>
+        <span className="inline-block">上がっていく、</span>
+        <span className="inline-block">自分だけの記録帳。</span>
       </p>
-      <nav className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {NAV_ITEMS.map((item) => (
+
+      <Link
+        to="/entries/new"
+        className="rf-btn-primary mt-8 flex items-center justify-center rounded-lg py-4 text-base font-semibold transition-opacity hover:opacity-90"
+      >
+        + 記録を作成する
+      </Link>
+
+      <nav className="mt-4 grid grid-cols-3 gap-3">
+        {SECONDARY_NAV_ITEMS.map((item) => (
           <Link
             key={item.to}
             to={item.to}
-            className="rf-surface flex flex-col gap-1 rounded-lg p-4 transition-opacity hover:opacity-80"
+            className="rf-surface flex items-center justify-center rounded-lg p-3 text-center transition-opacity hover:opacity-80"
           >
-            <span className="rf-heading text-base font-semibold">
+            <span className="rf-heading text-sm font-semibold">
               {item.title}
             </span>
-            <span className="rf-muted text-xs">{item.description}</span>
           </Link>
         ))}
       </nav>
