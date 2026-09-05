@@ -87,6 +87,7 @@ body {
 
 .rf-heading {
   font-family: var(--rf-font-display);
+  letter-spacing: -0.01em;
 }
 
 .rf-muted {
@@ -116,6 +117,9 @@ body {
 .rf-surface {
   background: var(--rf-surface);
   border: 1px solid var(--rf-border);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 10px 24px -14px rgba(0, 0, 0, 0.25);
 }
 
 .rf-border {
@@ -140,6 +144,25 @@ body {
 .rf-btn-primary {
   background: var(--rf-accent);
   color: var(--rf-accent-contrast);
+  box-shadow: 0 8px 20px -8px var(--rf-accent);
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.rf-btn-primary:hover {
+  box-shadow: 0 10px 26px -6px var(--rf-accent);
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rf-btn-primary {
+    transition: none;
+  }
+  .rf-btn-primary:hover {
+    transform: none;
+  }
 }
 
 .rf-btn-ghost {
