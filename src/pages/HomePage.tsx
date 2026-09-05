@@ -19,10 +19,11 @@ import {
   Sparkle,
   Trash2,
   Users,
+  Wheat,
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import RadarChart, { RADAR_LABEL_MARGIN, radarPointAt } from '../components/RadarChart'
+import RadarChart, { radarMaxRadius, radarPointAt } from '../components/RadarChart'
 import type { Entry } from '../types/database'
 
 // 使用頻度が高い順(記録一覧より、次に見る場所が多いもの)に並べる
@@ -62,7 +63,7 @@ const HERO_SAMPLE_TOTAL = (
   HERO_SAMPLE_AXES.reduce((sum, axis) => sum + axis.score, 0) /
   HERO_SAMPLE_AXES.length
 ).toFixed(1)
-const HERO_CHART_SIZE = 232
+const HERO_CHART_SIZE = 212
 
 // 軸名の代わりに置く装飾アイコン。実際の評価軸とは対応していない見た目のみの飾り
 const HERO_AXIS_ICONS = [Heart, Lightbulb, Droplet, Smile, MessageCircle, Sparkle]
@@ -178,46 +179,94 @@ function HomePage() {
               <span className="rf-heading text-base font-bold">{HERO_SAMPLE_TOTAL}</span>
               <span className="text-xs opacity-70">/ {HERO_SAMPLE_SCALE_MAX}</span>
             </div>
-            <Soup
-              size={40}
-              className="absolute opacity-70"
-              style={{ left: 0, top: 80, transform: 'rotate(-14deg)', color: 'var(--rf-accent-2)' }}
+            <Leaf
+              size={22}
+              className="absolute"
+              style={{
+                left: 80,
+                top: 44,
+                opacity: 0.45,
+                transform: 'rotate(28deg)',
+                color: 'var(--rf-success)',
+              }}
               aria-hidden="true"
             />
-            <Leaf
-              size={20}
-              className="absolute opacity-60"
-              style={{ left: 44, top: 70, transform: 'rotate(26deg)', color: 'var(--rf-success)' }}
+            <Soup
+              size={46}
+              className="absolute"
+              style={{
+                left: 0,
+                top: 74,
+                opacity: 0.72,
+                transform: 'rotate(-13deg)',
+                color: 'var(--rf-accent-2)',
+              }}
               aria-hidden="true"
             />
             <Coffee
-              size={26}
-              className="absolute opacity-60"
-              style={{ left: 34, top: 112, transform: 'rotate(10deg)', color: 'var(--rf-accent)' }}
+              size={30}
+              className="absolute"
+              style={{
+                left: 62,
+                top: 92,
+                opacity: 0.55,
+                transform: 'rotate(14deg)',
+                color: 'var(--rf-accent)',
+              }}
               aria-hidden="true"
             />
             <Beer
-              size={32}
-              className="absolute opacity-65"
-              style={{ left: 4, top: 134, transform: 'rotate(-6deg)', color: 'var(--rf-accent-2)' }}
+              size={36}
+              className="absolute"
+              style={{
+                left: 8,
+                top: 132,
+                opacity: 0.65,
+                transform: 'rotate(-7deg)',
+                color: 'var(--rf-accent-2)',
+              }}
               aria-hidden="true"
             />
             <Fish
-              size={22}
-              className="absolute opacity-55"
-              style={{ left: 48, top: 156, transform: 'rotate(20deg)', color: 'var(--rf-accent)' }}
+              size={26}
+              className="absolute"
+              style={{
+                left: 66,
+                top: 146,
+                opacity: 0.4,
+                transform: 'rotate(22deg)',
+                color: 'var(--rf-accent)',
+              }}
               aria-hidden="true"
             />
             <GlassWater
-              size={24}
-              className="absolute opacity-60"
-              style={{ left: 18, top: 184, transform: 'rotate(-20deg)', color: 'var(--rf-accent)' }}
+              size={28}
+              className="absolute"
+              style={{
+                left: 34,
+                top: 176,
+                opacity: 0.5,
+                transform: 'rotate(-19deg)',
+                color: 'var(--rf-accent)',
+              }}
+              aria-hidden="true"
+            />
+            <Wheat
+              size={22}
+              className="absolute"
+              style={{
+                left: 2,
+                top: 184,
+                opacity: 0.38,
+                transform: 'rotate(12deg)',
+                color: 'var(--rf-accent-2)',
+              }}
               aria-hidden="true"
             />
           </div>
           {/* チャート外周の余白ぶんだけ左に寄せ、狭い画面でも左カラムの幅を確保する */}
           <div
-            className="relative -ml-3 flex-shrink-0"
+            className="relative -ml-4 flex-shrink-0"
             style={{ width: HERO_CHART_SIZE, height: HERO_CHART_SIZE }}
           >
             <RadarChart
@@ -228,12 +277,11 @@ function HomePage() {
             />
             {HERO_SAMPLE_AXES.map((axis, i) => {
               const Icon = HERO_AXIS_ICONS[i % HERO_AXIS_ICONS.length]
-              const maxRadius = HERO_CHART_SIZE / 2 - RADAR_LABEL_MARGIN
               const point = radarPointAt(
                 HERO_CHART_SIZE,
                 HERO_SAMPLE_AXES.length,
                 i,
-                maxRadius + 15,
+                radarMaxRadius(HERO_CHART_SIZE, false) + 12,
               )
               return (
                 <Icon

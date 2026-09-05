@@ -14,9 +14,14 @@ interface RadarChartProps {
 // 目盛りとして薄く表示する同心多角形の、外周に対する半径の割合
 const GRID_RING_RATIOS = [1 / 3, 2 / 3, 1]
 
-// 軸ラベル用に外周にとっておく余白。ホームのヒーローで軸アイコンを
-// 重ねて表示する際、この値を使って同じ座標系で位置を計算する
-export const RADAR_LABEL_MARGIN = 36
+// 外周にとっておく余白。軸名+スコアを2段で出すぶん、ラベルありのときは広めにとる
+const LABEL_MARGIN = 46
+const NO_LABEL_MARGIN = 20
+
+// 多角形の外周半径。ホームのヒーローで軸アイコンを重ねる際にも使う
+export function radarMaxRadius(size: number, showLabels: boolean) {
+  return size / 2 - (showLabels ? LABEL_MARGIN : NO_LABEL_MARGIN)
+}
 
 // 中心・外周半径・軸数・何番目の軸かから、その頂点の座標を求める
 // (RadarChart内部の計算と同じ考え方を、ホームのヒーローの軸アイコン配置にも使い回す)
@@ -36,7 +41,7 @@ export function radarPointAt(
 
 function RadarChart({ axes, scaleMax, size = 260, showLabels = true }: RadarChartProps) {
   const center = size / 2
-  const maxRadius = center - RADAR_LABEL_MARGIN
+  const maxRadius = radarMaxRadius(size, showLabels)
 
   const angleForIndex = (index: number) =>
     -Math.PI / 2 + (index * 2 * Math.PI) / axes.length
@@ -96,25 +101,40 @@ function RadarChart({ axes, scaleMax, size = 260, showLabels = true }: RadarChar
         strokeWidth={2}
       />
 
-      {showLabels && axes.map((axis, i) => {
-        const label = pointAt(maxRadius + 16, i)
-        const cos = Math.cos(angleForIndex(i))
-        const anchor = cos > 0.3 ? 'start' : cos < -0.3 ? 'end' : 'middle'
-        return (
-          <text
-            key={axis.name}
-            x={label.x}
-            y={label.y}
-            textAnchor={anchor}
-            dominantBaseline="middle"
-            fontSize={11}
-            fill="var(--rf-muted, #495057)"
-            fontFamily="var(--rf-font-body, sans-serif)"
-          >
-            {axis.name}({axis.score})
-          </text>
-        )
-      })}
+      {showLabels &&
+        axes.map((axis, i) => {
+          const label = pointAt(maxRadius + 20, i)
+          const cos = Math.cos(angleForIndex(i))
+          const anchor = cos > 0.3 ? 'start' : cos < -0.3 ? 'end' : 'middle'
+          return (
+            <g key={axis.name}>
+              {/* 軸名とスコアを2段に分け、スコアを大きく強調する */}
+              <text
+                x={label.x}
+                y={label.y - 7}
+                textAnchor={anchor}
+                dominantBaseline="middle"
+                fontSize={12}
+                fill="var(--rf-muted, #495057)"
+                fontFamily="var(--rf-font-body, sans-serif)"
+              >
+                {axis.name}
+              </text>
+              <text
+                x={label.x}
+                y={label.y + 10}
+                textAnchor={anchor}
+                dominantBaseline="middle"
+                fontSize={17}
+                fontWeight="600"
+                fill="var(--rf-accent, #4c6ef5)"
+                fontFamily="var(--rf-font-body, sans-serif)"
+              >
+                {axis.score}
+              </text>
+            </g>
+          )
+        })}
     </svg>
   )
 }
