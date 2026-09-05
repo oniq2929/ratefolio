@@ -90,9 +90,9 @@ function HomePage() {
         <span className="inline-block">
           <span className="rf-accent">「好き」</span>の解像度が
         </span>
-        <span className="inline-block">上がっていく、</span>
-        <span className="inline-block">自分だけの記録帳。</span>
+        <span className="inline-block">上がっていく</span>
       </p>
+      <p className="rf-muted mt-1.5 text-sm">自分だけの記録帳</p>
 
       <Link
         to="/entries/new"
