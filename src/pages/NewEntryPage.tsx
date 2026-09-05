@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { compressImage } from '../lib/compressImage'
 import { useAuth } from '../contexts/AuthContext'
 import RadarChart from '../components/RadarChart'
+import RadarChartInput from '../components/RadarChartInput'
 import type { Axis, Genre } from '../types/database'
 
 type GenreWithAxes = Genre & { axes: Axis[] }
@@ -295,36 +296,25 @@ function NewEntryPage() {
               />
             </label>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
               <span className="text-sm">評価</span>
-              {sortedAxes.map((axis) => (
-                <label key={axis.id} className="flex flex-col gap-1 text-sm">
-                  {axis.name}: {scores[axis.id] ?? defaultScoreFor(selectedGenre.scale_max)}
-                  <input
-                    type="range"
-                    min={1}
-                    max={selectedGenre.scale_max}
-                    step={1}
-                    value={scores[axis.id] ?? defaultScoreFor(selectedGenre.scale_max)}
-                    onChange={(e) =>
-                      setScores((prev) => ({
-                        ...prev,
-                        [axis.id]: Number(e.target.value),
-                      }))
-                    }
-                  />
-                </label>
-              ))}
-            </div>
-
-            <div className="flex justify-center">
-              <RadarChart
-                axes={sortedAxes.map((axis) => ({
-                  name: axis.name,
-                  score: scores[axis.id] ?? defaultScoreFor(selectedGenre.scale_max),
-                }))}
-                scaleMax={selectedGenre.scale_max}
-              />
+              <p className="rf-muted text-xs">
+                チャート上の点をドラッグするか、軸の上をタップして入力します。
+              </p>
+              <div className="flex justify-center">
+                <RadarChartInput
+                  axes={sortedAxes.map((axis) => ({
+                    id: axis.id,
+                    name: axis.name,
+                    score:
+                      scores[axis.id] ?? defaultScoreFor(selectedGenre.scale_max),
+                  }))}
+                  scaleMax={selectedGenre.scale_max}
+                  onChange={(axisId, score) =>
+                    setScores((prev) => ({ ...prev, [axisId]: score }))
+                  }
+                />
+              </div>
             </div>
 
             <label className="flex flex-col gap-1 text-sm">
