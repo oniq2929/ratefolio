@@ -9,6 +9,7 @@ import GenresPage from './pages/GenresPage'
 import NewGenrePage from './pages/NewGenrePage'
 import GenreFormulasPage from './pages/GenreFormulasPage'
 import NewEntryPage from './pages/NewEntryPage'
+import EditEntryPage from './pages/EditEntryPage'
 import EntriesPage from './pages/EntriesPage'
 import PublicPage from './pages/PublicPage'
 
@@ -30,6 +31,10 @@ function App() {
                 />
                 <Route path="/entries" element={<EntriesPage />} />
                 <Route path="/entries/new" element={<NewEntryPage />} />
+                <Route
+                  path="/entries/:entryId/edit"
+                  element={<EditEntryPage />}
+                />
                 <Route path="/public" element={<PublicPage />} />
               </Route>
             </Route>

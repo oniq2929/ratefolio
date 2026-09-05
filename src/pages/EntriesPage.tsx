@@ -335,7 +335,14 @@ function EntriesPage() {
             : undefined
 
           return (
-            <li key={entry.id} className="rf-surface rounded-2xl p-4">
+            <li key={entry.id} className="rf-surface relative rounded-2xl p-4">
+              {/* カードのどこをタップしても編集画面へ。削除ボタンだけは
+                  このリンクより手前(z-20)に置いて、タップを奪われないようにする */}
+              <Link
+                to={`/entries/${entry.id}/edit`}
+                aria-label={`${entry.target_name}を編集する`}
+                className="absolute inset-0 z-10 rounded-2xl"
+              />
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h2 className="rf-heading truncate text-xl font-bold">
@@ -346,7 +353,7 @@ function EntriesPage() {
                     {entry.is_public ? '・公開' : '・非公開'}
                   </p>
                 </div>
-                <div className="flex flex-shrink-0 items-center gap-2">
+                <div className="relative z-20 flex flex-shrink-0 items-center gap-2">
                   <span className="rf-muted rf-mono text-xs">
                     {entry.entry_date}
                   </span>
