@@ -10,7 +10,7 @@ function AppLayout() {
       <header className="rf-surface border-b" style={{ borderColor: 'var(--rf-border)' }}>
         <div className="mx-auto flex max-w-2xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center justify-between gap-4">
-            <Link to="/" className="rf-logo text-lg font-semibold">
+            <Link to="/" className="rf-logo text-3xl font-semibold tracking-tight">
               Ratefolio
             </Link>
             <button

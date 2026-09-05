@@ -71,7 +71,7 @@ function LoginPage() {
 
   return (
     <main className="mx-auto max-w-sm px-4 py-10">
-      <h1 className="rf-logo text-2xl font-semibold">Ratefolio</h1>
+      <h1 className="rf-logo text-3xl font-semibold tracking-tight">Ratefolio</h1>
 
       <div className="mt-6 flex gap-2 text-sm">
         <button

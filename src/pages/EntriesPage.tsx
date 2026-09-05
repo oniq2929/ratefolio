@@ -149,6 +149,24 @@ function EntriesPage() {
     return sorted
   }, [entries, selectedGenreId, keyword, sortMode, sortAxisId, sortFormulaId, formulas])
 
+  const handleDeleteEntry = async (entry: EntryWithScores) => {
+    const confirmed = window.confirm(
+      `「${entry.target_name}」の記録を削除しますか？元に戻せません。`,
+    )
+    if (!confirmed) return
+
+    if (entry.photo_path) {
+      await supabase.storage.from('entry-photos').remove([entry.photo_path])
+    }
+
+    const { error } = await supabase.from('entries').delete().eq('id', entry.id)
+    if (error) {
+      setErrorMessage(error.message)
+      return
+    }
+    setEntries((prev) => prev.filter((e) => e.id !== entry.id))
+  }
+
   const handleGenreFilterChange = (genreId: string) => {
     setSelectedGenreId(genreId)
     setSortAxisId('')
@@ -311,9 +329,18 @@ function EntriesPage() {
                   <h2 className="rf-heading font-semibold">
                     {entry.target_name}
                   </h2>
-                  <span className="rf-muted rf-mono text-xs">
-                    {entry.entry_date}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="rf-muted rf-mono text-xs">
+                      {entry.entry_date}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteEntry(entry)}
+                      className="rf-danger text-xs underline"
+                    >
+                      削除
+                    </button>
+                  </div>
                 </div>
                 <p className="rf-muted text-xs">
                   {entry.genre_name}

@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 
 const NAV_ITEMS = [
@@ -25,14 +26,50 @@ const NAV_ITEMS = [
 ]
 
 function HomePage() {
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
+  const navigate = useNavigate()
+
+  const handleDeleteAccount = async () => {
+    if (!user) return
+
+    const confirmed = window.confirm(
+      'アカウントを削除しますか？ジャンル・記録・写真・計算式などすべてのデータが完全に削除され、元に戻せません。',
+    )
+    if (!confirmed) return
+
+    // Storage上の写真はDBの削除連鎖に含まれないため、先に自分の写真だけを消しておく
+    const { data: ownEntries } = await supabase
+      .from('entries')
+      .select('photo_path')
+      .eq('owner_id', user.id)
+      .not('photo_path', 'is', null)
+
+    const photoPaths = (ownEntries ?? [])
+      .map((entry) => entry.photo_path)
+      .filter((path): path is string => Boolean(path))
+
+    if (photoPaths.length > 0) {
+      await supabase.storage.from('entry-photos').remove(photoPaths)
+    }
+
+    const { error } = await supabase.rpc('delete_own_account')
+    if (error) {
+      window.alert('アカウントの削除に失敗しました: ' + error.message)
+      return
+    }
+
+    await signOut()
+    navigate('/login')
+  }
 
   return (
     <main className="mx-auto max-w-xl px-4 py-10">
-      <p className="rf-muted text-sm">
-        {user?.email} としてログイン中です。自分だけの評価軸で、あらゆるものを記録するアプリ。
+      <p className="rf-heading text-2xl leading-snug font-medium text-balance">
+        紡ぐほど<span className="rf-accent">「好き」</span>の解像度が上がっていく、
+        <br className="hidden sm:block" />
+        自分だけの記録帳。
       </p>
-      <nav className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <nav className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
         {NAV_ITEMS.map((item) => (
           <Link
             key={item.to}
@@ -46,6 +83,16 @@ function HomePage() {
           </Link>
         ))}
       </nav>
+
+      <div className="mt-10 border-t pt-4" style={{ borderColor: 'var(--rf-border)' }}>
+        <button
+          type="button"
+          onClick={handleDeleteAccount}
+          className="rf-danger text-xs underline"
+        >
+          アカウントを削除する
+        </button>
+      </div>
     </main>
   )
 }

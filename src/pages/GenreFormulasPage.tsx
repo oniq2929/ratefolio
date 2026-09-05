@@ -16,7 +16,9 @@ function GenreFormulasPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const [name, setName] = useState('')
-  const [weights, setWeights] = useState<Record<string, number>>({})
+  // 入力中はいったん文字列のまま保持する(数値に変換すると、
+  // 入力欄の「0」を一度全部消したい時に消せなくなる不具合が起きるため)
+  const [weightInputs, setWeightInputs] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
@@ -36,11 +38,11 @@ function GenreFormulasPage() {
         const genreData = data as GenreWithAxes
         setGenre(genreData)
 
-        const initialWeights: Record<string, number> = {}
+        const initialWeights: Record<string, string> = {}
         genreData.axes.forEach((axis) => {
-          initialWeights[axis.name] = 0
+          initialWeights[axis.name] = '0'
         })
-        setWeights(initialWeights)
+        setWeightInputs(initialWeights)
 
         supabase
           .from('formulas')
@@ -78,13 +80,20 @@ function GenreFormulasPage() {
 
     setSubmitting(true)
 
+    const numericWeights = Object.fromEntries(
+      Object.entries(weightInputs).map(([axisName, value]) => [
+        axisName,
+        Number(value) || 0,
+      ]),
+    )
+
     const { data, error } = await supabase
       .from('formulas')
       .insert({
         owner_id: user.id,
         genre_name: genre.name,
         name: trimmedName,
-        weights,
+        weights: numericWeights,
       })
       .select()
       .single()
@@ -97,7 +106,7 @@ function GenreFormulasPage() {
 
     setFormulas((prev) => [data as Formula, ...prev])
     setName('')
-    setWeights(Object.fromEntries(sortedAxes.map((axis) => [axis.name, 0])))
+    setWeightInputs(Object.fromEntries(sortedAxes.map((axis) => [axis.name, '0'])))
     setSubmitting(false)
   }
 
@@ -167,11 +176,11 @@ function GenreFormulasPage() {
               <input
                 type="number"
                 step="0.1"
-                value={weights[axis.name] ?? 0}
+                value={weightInputs[axis.name] ?? '0'}
                 onChange={(e) =>
-                  setWeights((prev) => ({
+                  setWeightInputs((prev) => ({
                     ...prev,
-                    [axis.name]: Number(e.target.value),
+                    [axis.name]: e.target.value,
                   }))
                 }
                 className="rf-input w-24 rounded px-2 py-1"
