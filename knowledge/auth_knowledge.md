@@ -3,7 +3,7 @@ title: "auth 説明書"
 type: knowledge
 project: "Ratefolio"
 created: "2026-09-01"
-updated: "2026-09-01"
+updated: "2026-09-05"
 version: "v1.0"
 tags:
   - type/knowledge
@@ -86,7 +86,7 @@ Supabaseの新規登録では、初期設定で「確認メールのリンクを
 1. （応急処置）SupabaseのSQL Editorで`update auth.users set email_confirmed_at = now() where email = '...'`を実行し、手動で確認済みにする。
 2. （開発中の運用）Supabaseダッシュボードの「Authentication → Sign In / Providers → Email」で「Confirm email」をオフにし、登録直後にそのままログインできるようにする。
 
-本番公開前には②を再びオンに戻し、確認メールの戻り先URL(Site URL / Redirect URLs)を実際の公開ドメインに設定し直す必要がある。
+Vercelへの本番公開時に、いったん②をオンに戻して本番URLからの確認メールの流れ(Site URL / Redirect URLsを本番ドメインに変更)が正しく機能することも確認した。そのうえで、「Ratefolioは個人(および少数の知人)向けの利用が中心であり、メールアドレスの実在確認をしなくても他ユーザーの非公開データの保護(RLS)には影響しない」という判断から、**Confirm emailは恒久的にオフにする**という仕様を正式に決定した。メールアドレスは「本人であることの証明」ではなく、あくまで「ログイン用の識別子」として扱う設計である。
 
 ---
 
@@ -170,7 +170,7 @@ if (!user) {
 
 ## 7. つまずきやすいポイント・よくある誤解
 
-- **確認メールのリンクは「開発機のlocalhost」に戻ってくる**：スマホ等、別端末でリンクを開くとエラーになる。開発中は「Confirm email」オフか、SQLでの手動確認で回避する（3.4節参照）。
+- **確認メールのリンクは「開発機のlocalhost」に戻ってくる**：スマホ等、別端末でリンクを開くとエラーになる。開発中は「Confirm email」オフか、SQLでの手動確認で回避する（3.4節参照）。本番公開後は、この問題自体を「Confirm emailを恒久的にオフにする」という仕様決定で解消した。
 - **`useAuth()`は`AuthProvider`の外側では使えない**：`App.tsx`で`<AuthProvider>`の外に置いたコンポーネントから`useAuth()`を呼ぶと、`createContext`の初期値`undefined`が返り、意図的にエラーを投げるようにしている。エラーが出たら「Providerで囲み忘れていないか」を疑う。
 - **`Invalid login credentials`は原因が複数ある**：パスワード間違いだけでなく、「メール未確認のまま(`email_confirmed_at`が`null`)」でも似たエラーになりうる。ログインできないときは、まずSupabaseダッシュボードのUsers一覧で該当ユーザーの確認状態を見るとよい。
 
