@@ -6,9 +6,7 @@ import {
   Coffee,
   Droplet,
   FileText,
-  Fish,
   FolderKanban,
-  GlassWater,
   Heart,
   Leaf,
   Lightbulb,
@@ -152,7 +150,10 @@ function HomePage() {
     <main className="mx-auto max-w-xl px-4 py-10">
       {/* ヒーロー: 見出しをカード全幅で上に置き、レーダーチャートは
           その下に大きく表示する(見出しの折り返し数と、図の大きさを両立させるため) */}
-      <div className="rf-surface relative overflow-hidden rounded-2xl p-5">
+      <div
+        className="rf-surface relative overflow-hidden rounded-2xl p-5"
+        style={{ containerType: 'inline-size' }}
+      >
         <div
           className="pointer-events-none absolute -top-8 -right-8 h-32 w-32 rounded-full blur-2xl"
           style={{ background: 'var(--rf-accent-2)', opacity: 0.2 }}
@@ -161,11 +162,11 @@ function HomePage() {
         {/* 見出しは背面のイラスト/チャートより手前(z-10)に置き、
             間隔を詰めて多少重なっても文字が隠れないようにする */}
         <div className="relative z-10">
-          {/* 必ず1行に収めるため、画面幅に応じて文字サイズを自動で縮める
-              (19文字ぶんの幅がカードに収まるように係数を決めている) */}
+          {/* カードの実幅を基準に文字サイズを決め、19文字を1行で幅いっぱいに
+              並べる。万一はみ出す場合は overflow-hidden で切り落とす */}
           <p
-            className="rf-heading leading-snug font-semibold tracking-tight whitespace-nowrap"
-            style={{ fontSize: 'clamp(12px, calc(4.7vw - 3px), 18px)' }}
+            className="rf-heading overflow-hidden leading-snug font-semibold tracking-tight whitespace-nowrap"
+            style={{ fontSize: 'clamp(12px, 5.2cqw, 22px)' }}
           >
             綴るほど<span className="rf-accent">「好き」</span>の解像度が上がっていく
           </p>
@@ -179,27 +180,27 @@ function HomePage() {
               <span className="rf-heading text-base font-bold">{HERO_SAMPLE_TOTAL}</span>
               <span className="text-xs opacity-70">/ {HERO_SAMPLE_SCALE_MAX}</span>
             </div>
-            <Soup
-              size={38}
-              className="absolute"
-              style={{
-                left: 0,
-                top: 74,
-                opacity: 0.72,
-                transform: 'rotate(-13deg)',
-                color: 'var(--rf-accent-2)',
-              }}
-              aria-hidden="true"
-            />
             <Coffee
               size={30}
               className="absolute"
               style={{
                 left: 62,
-                top: 92,
+                top: 88,
                 opacity: 0.55,
                 transform: 'rotate(14deg)',
                 color: 'var(--rf-accent)',
+              }}
+              aria-hidden="true"
+            />
+            <Soup
+              size={38}
+              className="absolute"
+              style={{
+                left: 0,
+                top: 104,
+                opacity: 0.72,
+                transform: 'rotate(-13deg)',
+                color: 'var(--rf-accent-2)',
               }}
               aria-hidden="true"
             />
@@ -207,35 +208,11 @@ function HomePage() {
               size={36}
               className="absolute"
               style={{
-                left: 8,
-                top: 132,
+                left: 14,
+                top: 150,
                 opacity: 0.65,
                 transform: 'rotate(-7deg)',
                 color: 'var(--rf-accent-2)',
-              }}
-              aria-hidden="true"
-            />
-            <Fish
-              size={26}
-              className="absolute"
-              style={{
-                left: 66,
-                top: 146,
-                opacity: 0.4,
-                transform: 'rotate(22deg)',
-                color: 'var(--rf-accent)',
-              }}
-              aria-hidden="true"
-            />
-            <GlassWater
-              size={28}
-              className="absolute"
-              style={{
-                left: 34,
-                top: 176,
-                opacity: 0.5,
-                transform: 'rotate(-19deg)',
-                color: 'var(--rf-accent)',
               }}
               aria-hidden="true"
             />
@@ -286,7 +263,7 @@ function HomePage() {
               return (
                 <Icon
                   key={axis.name}
-                  size={16}
+                  size={21}
                   className="absolute"
                   style={{
                     left: point.x,

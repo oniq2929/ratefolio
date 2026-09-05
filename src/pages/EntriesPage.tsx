@@ -379,15 +379,23 @@ function EntriesPage() {
                 </p>
               )}
 
-              {/* 写真があれば左に写真・右にチャート、なければチャートを全幅で表示 */}
+              {/* 左に写真・右にチャート。写真がない場合もNo Imageの枠を置き、
+                  チャートの位置が記録ごとにズレないようにする */}
               <div className="mt-3 flex items-center gap-3">
-                {photoUrl && (
+                {photoUrl ? (
                   <img
                     src={photoUrl}
                     alt={entry.target_name}
                     loading="lazy"
-                    className="aspect-square w-2/5 max-w-48 flex-shrink-0 rounded-xl object-cover"
+                    className="aspect-square w-1/3 max-w-40 flex-shrink-0 rounded-xl object-cover"
                   />
+                ) : (
+                  <div
+                    className="rf-muted flex aspect-square w-1/3 max-w-40 flex-shrink-0 items-center justify-center rounded-xl text-xs"
+                    style={{ background: 'var(--rf-chip-bg)' }}
+                  >
+                    No Image
+                  </div>
                 )}
                 <div className="min-w-0 flex-1">
                   <RadarChart
@@ -396,7 +404,7 @@ function EntriesPage() {
                       score: s.score,
                     }))}
                     scaleMax={entry.scale_max}
-                    size={260}
+                    size={210}
                   />
                 </div>
               </div>

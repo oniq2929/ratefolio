@@ -115,7 +115,7 @@ function RadarChart({ axes, scaleMax, size = 260, showLabels = true }: RadarChar
                 y={label.y - 7}
                 textAnchor={anchor}
                 dominantBaseline="middle"
-                fontSize={14}
+                fontSize={16}
                 fill="var(--rf-muted, #495057)"
                 fontFamily="var(--rf-font-body, sans-serif)"
               >
