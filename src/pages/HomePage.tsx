@@ -4,16 +4,16 @@ import {
   Beer,
   ChevronRight,
   Coffee,
-  Cookie,
   Droplet,
   FileText,
+  Fish,
   FolderKanban,
   GlassWater,
   Heart,
+  Leaf,
   Lightbulb,
   MessageCircle,
   PenLine,
-  Pizza,
   Smile,
   Soup,
   Sparkle,
@@ -160,15 +160,15 @@ function HomePage() {
         {/* 見出しは背面のイラスト/チャートより手前(z-10)に置き、
             間隔を詰めて多少重なっても文字が隠れないようにする */}
         <div className="relative z-10">
-          <p className="rf-heading text-lg leading-snug font-semibold tracking-tight">
-            <span className="inline-block">綴るほど</span>
-            <span className="inline-block">
-              <span className="rf-accent">「好き」</span>の
-            </span>
-            <span className="inline-block">解像度が</span>
-            <span className="inline-block">上がっていく</span>
+          {/* 必ず1行に収めるため、画面幅に応じて文字サイズを自動で縮める
+              (19文字ぶんの幅がカードに収まるように係数を決めている) */}
+          <p
+            className="rf-heading leading-snug font-semibold tracking-tight whitespace-nowrap"
+            style={{ fontSize: 'clamp(12px, calc(4.7vw - 3px), 18px)' }}
+          >
+            綴るほど<span className="rf-accent">「好き」</span>の解像度が上がっていく
           </p>
-          <p className="rf-muted mt-1 text-xs">自分だけの記録帳</p>
+          <p className="rf-muted mt-1 text-sm">自分だけの記録帳</p>
         </div>
 
         <div className="relative z-0 -mt-6 flex items-start gap-1">
@@ -178,40 +178,40 @@ function HomePage() {
               <span className="rf-heading text-base font-bold">{HERO_SAMPLE_TOTAL}</span>
               <span className="text-xs opacity-70">/ {HERO_SAMPLE_SCALE_MAX}</span>
             </div>
-            <Pizza
-              size={26}
-              className="absolute opacity-60"
-              style={{ left: 6, top: 70, transform: 'rotate(-9deg)', color: 'var(--rf-danger)' }}
-              aria-hidden="true"
-            />
-            <GlassWater
-              size={22}
-              className="absolute opacity-60"
-              style={{ left: 46, top: 68, transform: 'rotate(18deg)', color: 'var(--rf-accent)' }}
-              aria-hidden="true"
-            />
             <Soup
-              size={38}
+              size={40}
               className="absolute opacity-70"
-              style={{ left: 4, top: 110, transform: 'rotate(-14deg)', color: 'var(--rf-accent-2)' }}
+              style={{ left: 0, top: 80, transform: 'rotate(-14deg)', color: 'var(--rf-accent-2)' }}
               aria-hidden="true"
             />
-            <Cookie
+            <Leaf
               size={20}
-              className="absolute opacity-65"
-              style={{ left: 44, top: 116, transform: 'rotate(14deg)', color: 'var(--rf-accent-2)' }}
-              aria-hidden="true"
-            />
-            <Beer
-              size={30}
-              className="absolute opacity-65"
-              style={{ left: 40, top: 156, transform: 'rotate(10deg)', color: 'var(--rf-accent-2)' }}
+              className="absolute opacity-60"
+              style={{ left: 44, top: 70, transform: 'rotate(26deg)', color: 'var(--rf-success)' }}
               aria-hidden="true"
             />
             <Coffee
               size={26}
               className="absolute opacity-60"
-              style={{ left: 8, top: 178, transform: 'rotate(7deg)', color: 'var(--rf-accent)' }}
+              style={{ left: 34, top: 112, transform: 'rotate(10deg)', color: 'var(--rf-accent)' }}
+              aria-hidden="true"
+            />
+            <Beer
+              size={32}
+              className="absolute opacity-65"
+              style={{ left: 4, top: 134, transform: 'rotate(-6deg)', color: 'var(--rf-accent-2)' }}
+              aria-hidden="true"
+            />
+            <Fish
+              size={22}
+              className="absolute opacity-55"
+              style={{ left: 48, top: 156, transform: 'rotate(20deg)', color: 'var(--rf-accent)' }}
+              aria-hidden="true"
+            />
+            <GlassWater
+              size={24}
+              className="absolute opacity-60"
+              style={{ left: 18, top: 184, transform: 'rotate(-20deg)', color: 'var(--rf-accent)' }}
               aria-hidden="true"
             />
           </div>
