@@ -9,7 +9,6 @@ import {
   Lightbulb,
   MessageCircle,
   PenLine,
-  Quote,
   Smile,
   Sparkle,
   Trash2,
@@ -57,7 +56,7 @@ const HERO_SAMPLE_TOTAL = (
   HERO_SAMPLE_AXES.reduce((sum, axis) => sum + axis.score, 0) /
   HERO_SAMPLE_AXES.length
 ).toFixed(1)
-const HERO_CHART_SIZE = 150
+const HERO_CHART_SIZE = 176
 
 // 軸名の代わりに置く装飾アイコン。実際の評価軸とは対応していない見た目のみの飾り
 const HERO_AXIS_ICONS = [Heart, Lightbulb, Droplet, Smile, MessageCircle, Sparkle]
@@ -161,17 +160,12 @@ function HomePage() {
 
         <div className="relative flex items-center gap-3">
           <div className="min-w-0 flex-1">
-            <Quote
-              className="rf-accent opacity-50"
-              size={18}
-              style={{ transform: 'scaleX(-1)' }}
-              aria-hidden="true"
-            />
-            <p className="rf-heading mt-1 text-xl leading-snug font-semibold tracking-tight">
+            <p className="rf-heading text-base leading-snug font-semibold tracking-tight">
               <span className="inline-block">綴るほど</span>
               <span className="inline-block">
-                <span className="rf-accent">「好き」</span>の解像度が
+                <span className="rf-accent">「好き」</span>の
               </span>
+              <span className="inline-block">解像度が</span>
               <span className="inline-block">上がっていく</span>
             </p>
             <p className="rf-muted mt-1 text-xs">自分だけの記録帳</p>

@@ -20,10 +20,10 @@
           var stored = localStorage.getItem('ratefolio-theme')
           document.documentElement.setAttribute(
             'data-app-theme',
-            THEMES.indexOf(stored) === -1 ? 'field-notes' : stored,
+            THEMES.indexOf(stored) === -1 ? 'quiet-slate' : stored,
           )
         } catch (e) {
-          document.documentElement.setAttribute('data-app-theme', 'field-notes')
+          document.documentElement.setAttribute('data-app-theme', 'quiet-slate')
         }
       })()
     </script>

@@ -9,7 +9,7 @@ import {
 export type ThemeName = 'field-notes' | 'radar-bright' | 'soft-grid' | 'quiet-slate'
 
 const STORAGE_KEY = 'ratefolio-theme'
-const DEFAULT_THEME: ThemeName = 'field-notes'
+const DEFAULT_THEME: ThemeName = 'quiet-slate'
 const THEME_NAMES: ThemeName[] = [
   'field-notes',
   'radar-bright',
