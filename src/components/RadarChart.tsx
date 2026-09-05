@@ -62,11 +62,12 @@ function RadarChart({ axes, scaleMax, size = 260, showLabels = true }: RadarChar
   )
 
   return (
+    // sizeは内部の座標系。実際の表示幅は置かれた枠に合わせて縮み、
+    // sizeを上限とする(枠が狭い画面でもレイアウトが崩れないようにするため)
     <svg
       viewBox={`0 0 ${size} ${size}`}
-      width={size}
-      height={size}
-      style={{ overflow: 'visible' }}
+      width="100%"
+      style={{ display: 'block', maxWidth: size, overflow: 'visible' }}
     >
       {GRID_RING_RATIOS.map((ratio) => (
         <polygon
@@ -114,7 +115,7 @@ function RadarChart({ axes, scaleMax, size = 260, showLabels = true }: RadarChar
                 y={label.y - 7}
                 textAnchor={anchor}
                 dominantBaseline="middle"
-                fontSize={12}
+                fontSize={14}
                 fill="var(--rf-muted, #495057)"
                 fontFamily="var(--rf-font-body, sans-serif)"
               >
@@ -122,10 +123,10 @@ function RadarChart({ axes, scaleMax, size = 260, showLabels = true }: RadarChar
               </text>
               <text
                 x={label.x}
-                y={label.y + 10}
+                y={label.y + 11}
                 textAnchor={anchor}
                 dominantBaseline="middle"
-                fontSize={17}
+                fontSize={20}
                 fontWeight="600"
                 fill="var(--rf-accent, #4c6ef5)"
                 fontFamily="var(--rf-font-body, sans-serif)"

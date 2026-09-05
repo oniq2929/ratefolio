@@ -179,20 +179,8 @@ function HomePage() {
               <span className="rf-heading text-base font-bold">{HERO_SAMPLE_TOTAL}</span>
               <span className="text-xs opacity-70">/ {HERO_SAMPLE_SCALE_MAX}</span>
             </div>
-            <Leaf
-              size={22}
-              className="absolute"
-              style={{
-                left: 80,
-                top: 44,
-                opacity: 0.45,
-                transform: 'rotate(28deg)',
-                color: 'var(--rf-success)',
-              }}
-              aria-hidden="true"
-            />
             <Soup
-              size={46}
+              size={38}
               className="absolute"
               style={{
                 left: 0,
@@ -260,6 +248,18 @@ function HomePage() {
                 opacity: 0.38,
                 transform: 'rotate(12deg)',
                 color: 'var(--rf-accent-2)',
+              }}
+              aria-hidden="true"
+            />
+            <Leaf
+              size={22}
+              className="absolute"
+              style={{
+                left: 72,
+                top: 190,
+                opacity: 0.45,
+                transform: 'rotate(28deg)',
+                color: 'var(--rf-success)',
               }}
               aria-hidden="true"
             />

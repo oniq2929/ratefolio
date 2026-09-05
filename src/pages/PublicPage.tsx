@@ -341,72 +341,69 @@ function PublicPage() {
           const score = rankScoreOf(entry)
 
           return (
-            <li
-              key={entry.id}
-              className="rf-surface flex flex-col gap-4 rounded-2xl p-4 sm:flex-row sm:items-start sm:gap-5"
-            >
-              {photoUrl && (
-                <img
-                  src={photoUrl}
-                  alt={entry.target_name}
-                  loading="lazy"
-                  className="h-56 w-full rounded-xl object-cover sm:h-52 sm:w-52 sm:flex-shrink-0"
-                />
-              )}
-              <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 className="rf-heading flex items-center gap-2 text-xl font-bold">
-                      {viewMode === 'ranking' && (
-                        <span className="rf-accent flex-shrink-0">
-                          {index + 1}位
-                        </span>
-                      )}
-                      <span className="truncate">{entry.target_name}</span>
-                    </h2>
-                    <p className="rf-muted mt-0.5 text-xs">
-                      {entry.genre_name} ・{' '}
-                      {authorNames[entry.owner_id] ?? '不明なユーザー'}
-                    </p>
-                  </div>
-                  <span className="rf-muted rf-mono flex-shrink-0 text-xs">
-                    {entry.entry_date}
-                  </span>
-                </div>
-                {entry.tags.length > 0 && (
-                  <p className="mt-2 flex flex-wrap gap-1 text-xs">
-                    {entry.tags.map((tag) => (
-                      <span key={tag} className="rf-chip rounded-full px-2 py-0.5">
-                        #{tag}
+            <li key={entry.id} className="rf-surface rounded-2xl p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h2 className="rf-heading flex items-center gap-2 text-xl font-bold">
+                    {viewMode === 'ranking' && (
+                      <span className="rf-accent flex-shrink-0">
+                        {index + 1}位
                       </span>
-                    ))}
+                    )}
+                    <span className="truncate">{entry.target_name}</span>
+                  </h2>
+                  <p className="rf-muted mt-0.5 text-xs">
+                    {entry.genre_name} ・{' '}
+                    {authorNames[entry.owner_id] ?? '不明なユーザー'}
                   </p>
-                )}
-                {entry.comment && (
-                  <p className="mt-2 text-sm">{entry.comment}</p>
-                )}
-                {viewMode === 'ranking' && rankingBasis === 'formula' && (
+                </div>
+                <span className="rf-muted rf-mono flex-shrink-0 text-xs">
+                  {entry.entry_date}
+                </span>
+              </div>
+              {entry.tags.length > 0 && (
+                <p className="mt-2 flex flex-wrap gap-1 text-xs">
+                  {entry.tags.map((tag) => (
+                    <span key={tag} className="rf-chip rounded-full px-2 py-0.5">
+                      #{tag}
+                    </span>
+                  ))}
+                </p>
+              )}
+              {entry.comment && <p className="mt-2 text-sm">{entry.comment}</p>}
+              {viewMode === 'ranking' && rankingBasis === 'formula' && (
+                <p className="rf-accent rf-mono mt-2 text-xs font-semibold">
+                  計算式スコア: {score}
+                </p>
+              )}
+              {viewMode === 'ranking' &&
+                rankingBasis !== 'formula' &&
+                score >= 0 && (
                   <p className="rf-accent rf-mono mt-2 text-xs font-semibold">
-                    計算式スコア: {score}
+                    {rankingBasis === 'axis'
+                      ? `${rankingAxisName}: ${Math.round(score * entry.scale_max)}/${entry.scale_max}`
+                      : `総合: ${Math.round(score * 100)}%`}
                   </p>
                 )}
-                {viewMode === 'ranking' &&
-                  rankingBasis !== 'formula' &&
-                  score >= 0 && (
-                    <p className="rf-accent rf-mono mt-2 text-xs font-semibold">
-                      {rankingBasis === 'axis'
-                        ? `${rankingAxisName}: ${Math.round(score * entry.scale_max)}/${entry.scale_max}`
-                        : `総合: ${Math.round(score * 100)}%`}
-                    </p>
-                  )}
-                <div className="mt-3 flex justify-center">
+
+              {/* 写真があれば左に写真・右にチャート、なければチャートを全幅で表示 */}
+              <div className="mt-3 flex items-center gap-3">
+                {photoUrl && (
+                  <img
+                    src={photoUrl}
+                    alt={entry.target_name}
+                    loading="lazy"
+                    className="aspect-square w-2/5 max-w-48 flex-shrink-0 rounded-xl object-cover"
+                  />
+                )}
+                <div className="min-w-0 flex-1">
                   <RadarChart
                     axes={sortedScores.map((s) => ({
                       name: s.axis_name,
                       score: s.score,
                     }))}
                     scaleMax={entry.scale_max}
-                    size={236}
+                    size={260}
                   />
                 </div>
               </div>

@@ -25,6 +25,8 @@ function EntriesPage() {
   const [photoUrls, setPhotoUrls] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  // 読み込みが遅い原因を切り分けるための一時的な計測(原因が判明したら削除する)
+  const [timings, setTimings] = useState<Record<string, string>>({})
 
   const [selectedGenreId, setSelectedGenreId] = useState('')
   const [keyword, setKeyword] = useState('')
@@ -35,51 +37,35 @@ function EntriesPage() {
   useEffect(() => {
     if (!user) return
 
-    Promise.all([
-      supabase
-        .from('entries')
-        .select('*, entry_scores(*)')
-        .eq('owner_id', user.id)
-        .order('entry_date', { ascending: false }),
-      supabase
-        .from('genres')
-        .select('*, axes(*)')
-        .order('created_at', { ascending: false }),
-      supabase
-        .from('formulas')
-        .select('*')
-        .order('created_at', { ascending: false }),
-    ]).then(async ([entriesRes, genresRes, formulasRes]) => {
-      if (entriesRes.error) {
-        setErrorMessage(entriesRes.error.message)
+    const startedAt = performance.now()
+    const elapsed = () => ((performance.now() - startedAt) / 1000).toFixed(1)
+
+    // 3つのクエリはそれぞれ独立に反映する。まとめて待つと、
+    // 一番遅いクエリが終わるまで一覧が表示されないため
+    supabase
+      .from('entries')
+      .select('*, entry_scores(*)')
+      .eq('owner_id', user.id)
+      .order('entry_date', { ascending: false })
+      .then(async ({ data, error }) => {
+        if (error) {
+          setErrorMessage(error.message)
+          setLoading(false)
+          return
+        }
+
+        const fetchedEntries = (data ?? []) as EntryWithScores[]
+        setEntries(fetchedEntries)
         setLoading(false)
-        return
-      }
-      if (genresRes.error) {
-        setErrorMessage(genresRes.error.message)
-        setLoading(false)
-        return
-      }
-      if (formulasRes.error) {
-        setErrorMessage(formulasRes.error.message)
-        setLoading(false)
-        return
-      }
+        setTimings((prev) => ({ ...prev, entries: elapsed() }))
 
-      const fetchedEntries = (entriesRes.data ?? []) as EntryWithScores[]
-      setEntries(fetchedEntries)
-      setGenres((genresRes.data ?? []) as GenreWithAxes[])
-      setFormulas((formulasRes.data ?? []) as Formula[])
+        // 非公開バケットの写真は、期限付きの署名URLを発行して初めて表示できる
+        const photoPaths = fetchedEntries
+          .map((e) => e.photo_path)
+          .filter((path): path is string => Boolean(path))
 
-      // 写真URLの発行を待たずに一覧を表示し、写真は後から差し込む
-      setLoading(false)
+        if (photoPaths.length === 0) return
 
-      // 非公開バケットの写真は、期限付きの署名URLを発行して初めて表示できる
-      const photoPaths = fetchedEntries
-        .map((e) => e.photo_path)
-        .filter((path): path is string => Boolean(path))
-
-      if (photoPaths.length > 0) {
         const { data: signedUrls } = await supabase.storage
           .from('entry-photos')
           .createSignedUrls(photoPaths, 60 * 60)
@@ -93,8 +79,34 @@ function EntriesPage() {
           })
           setPhotoUrls(urlMap)
         }
-      }
-    })
+        setTimings((prev) => ({ ...prev, photoUrls: elapsed() }))
+      })
+
+    supabase
+      .from('genres')
+      .select('*, axes(*)')
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          setErrorMessage(error.message)
+          return
+        }
+        setGenres((data ?? []) as GenreWithAxes[])
+        setTimings((prev) => ({ ...prev, genres: elapsed() }))
+      })
+
+    supabase
+      .from('formulas')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          setErrorMessage(error.message)
+          return
+        }
+        setFormulas((data ?? []) as Formula[])
+        setTimings((prev) => ({ ...prev, formulas: elapsed() }))
+      })
   }, [user])
 
   const selectedGenre = useMemo(
@@ -304,6 +316,15 @@ function EntriesPage() {
         <p className="rf-muted mt-6 text-sm">条件に一致する記録がありません。</p>
       )}
 
+      {/* 読み込み時間の内訳(遅さの原因を切り分けるための一時的な表示) */}
+      {Object.keys(timings).length > 0 && (
+        <p className="rf-muted rf-mono mt-4 text-[10px]">
+          読み込み計測: 記録 {timings.entries ?? '-'}s / ジャンル{' '}
+          {timings.genres ?? '-'}s / 計算式 {timings.formulas ?? '-'}s / 写真URL{' '}
+          {timings.photoUrls ?? '-'}s
+        </p>
+      )}
+
       <ul className="mt-6 flex flex-col gap-4">
         {visibleEntries.map((entry) => {
           const sortedScores = [...entry.entry_scores].sort(
@@ -314,72 +335,68 @@ function EntriesPage() {
             : undefined
 
           return (
-            <li
-              key={entry.id}
-              className="rf-surface flex flex-col gap-4 rounded-2xl p-4 sm:flex-row sm:items-start sm:gap-5"
-            >
-              {photoUrl && (
-                <img
-                  src={photoUrl}
-                  alt={entry.target_name}
-                  loading="lazy"
-                  className="h-56 w-full rounded-xl object-cover sm:h-52 sm:w-52 sm:flex-shrink-0"
-                />
-              )}
-              <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 className="rf-heading truncate text-xl font-bold">
-                      {entry.target_name}
-                    </h2>
-                    <p className="rf-muted mt-0.5 text-xs">
-                      {entry.genre_name}
-                      {entry.is_public ? '・公開' : '・非公開'}
-                    </p>
-                  </div>
-                  <div className="flex flex-shrink-0 items-center gap-2">
-                    <span className="rf-muted rf-mono text-xs">
-                      {entry.entry_date}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteEntry(entry)}
-                      className="rf-danger text-xs underline"
-                    >
-                      削除
-                    </button>
-                  </div>
+            <li key={entry.id} className="rf-surface rounded-2xl p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h2 className="rf-heading truncate text-xl font-bold">
+                    {entry.target_name}
+                  </h2>
+                  <p className="rf-muted mt-0.5 text-xs">
+                    {entry.genre_name}
+                    {entry.is_public ? '・公開' : '・非公開'}
+                  </p>
                 </div>
-                {entry.tags.length > 0 && (
-                  <p className="mt-2 flex flex-wrap gap-1 text-xs">
-                    {entry.tags.map((tag) => (
-                      <span key={tag} className="rf-chip rounded-full px-2 py-0.5">
-                        #{tag}
-                      </span>
-                    ))}
-                  </p>
+                <div className="flex flex-shrink-0 items-center gap-2">
+                  <span className="rf-muted rf-mono text-xs">
+                    {entry.entry_date}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteEntry(entry)}
+                    className="rf-danger text-xs underline"
+                  >
+                    削除
+                  </button>
+                </div>
+              </div>
+              {entry.tags.length > 0 && (
+                <p className="mt-2 flex flex-wrap gap-1 text-xs">
+                  {entry.tags.map((tag) => (
+                    <span key={tag} className="rf-chip rounded-full px-2 py-0.5">
+                      #{tag}
+                    </span>
+                  ))}
+                </p>
+              )}
+              {entry.comment && <p className="mt-2 text-sm">{entry.comment}</p>}
+              {sortMode === 'formula_desc' && sortFormulaId && (
+                <p className="rf-accent rf-mono mt-2 text-xs font-semibold">
+                  計算式スコア:{' '}
+                  {scoreByFormula(
+                    entry,
+                    formulas.find((f) => f.id === sortFormulaId)?.weights ?? {},
+                  )}
+                </p>
+              )}
+
+              {/* 写真があれば左に写真・右にチャート、なければチャートを全幅で表示 */}
+              <div className="mt-3 flex items-center gap-3">
+                {photoUrl && (
+                  <img
+                    src={photoUrl}
+                    alt={entry.target_name}
+                    loading="lazy"
+                    className="aspect-square w-2/5 max-w-48 flex-shrink-0 rounded-xl object-cover"
+                  />
                 )}
-                {entry.comment && (
-                  <p className="mt-2 text-sm">{entry.comment}</p>
-                )}
-                {sortMode === 'formula_desc' && sortFormulaId && (
-                  <p className="rf-accent rf-mono mt-2 text-xs font-semibold">
-                    計算式スコア:{' '}
-                    {scoreByFormula(
-                      entry,
-                      formulas.find((f) => f.id === sortFormulaId)?.weights ??
-                        {},
-                    )}
-                  </p>
-                )}
-                <div className="mt-3 flex justify-center">
+                <div className="min-w-0 flex-1">
                   <RadarChart
                     axes={sortedScores.map((s) => ({
                       name: s.axis_name,
                       score: s.score,
                     }))}
                     scaleMax={entry.scale_max}
-                    size={236}
+                    size={260}
                   />
                 </div>
               </div>
