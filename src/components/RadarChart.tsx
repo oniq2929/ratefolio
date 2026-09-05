@@ -7,12 +7,14 @@ interface RadarChartProps {
   axes: RadarChartAxis[]
   scaleMax: number
   size?: number
+  // ホームのヒーローのような小さい表示では、軸名の文字が窮屈になるため省略できるようにする
+  showLabels?: boolean
 }
 
 // 目盛りとして薄く表示する同心多角形の、外周に対する半径の割合
 const GRID_RING_RATIOS = [1 / 3, 2 / 3, 1]
 
-function RadarChart({ axes, scaleMax, size = 260 }: RadarChartProps) {
+function RadarChart({ axes, scaleMax, size = 260, showLabels = true }: RadarChartProps) {
   const center = size / 2
   const maxRadius = center - 36
 
@@ -74,7 +76,7 @@ function RadarChart({ axes, scaleMax, size = 260 }: RadarChartProps) {
         strokeWidth={2}
       />
 
-      {axes.map((axis, i) => {
+      {showLabels && axes.map((axis, i) => {
         const label = pointAt(maxRadius + 16, i)
         const cos = Math.cos(angleForIndex(i))
         const anchor = cos > 0.3 ? 'start' : cos < -0.3 ? 'end' : 'middle'

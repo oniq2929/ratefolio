@@ -1,12 +1,18 @@
-import { Hexagon, Leaf, Sparkles } from 'lucide-react'
+import { Cloud, Hexagon, Leaf, Sparkles } from 'lucide-react'
 import { THEME_LABELS, useTheme, type ThemeName } from '../contexts/ThemeContext'
 
-const THEME_ORDER: ThemeName[] = ['field-notes', 'radar-bright', 'soft-grid']
+const THEME_ORDER: ThemeName[] = [
+  'field-notes',
+  'radar-bright',
+  'soft-grid',
+  'quiet-slate',
+]
 
 const THEME_ICONS: Record<ThemeName, typeof Leaf> = {
   'field-notes': Leaf,
   'radar-bright': Sparkles,
   'soft-grid': Hexagon,
+  'quiet-slate': Cloud,
 }
 
 function ThemeSwitcher() {

@@ -68,6 +68,25 @@
   --rf-font-mono: "Space Mono", monospace;
 }
 
+[data-app-theme="quiet-slate"] {
+  --rf-bg: #e6e7ea;
+  --rf-surface: #f6f6f8;
+  --rf-text: #2b2f36;
+  --rf-muted: #6b7280;
+  --rf-border: #d6d8dc;
+  --rf-accent: #55708a;
+  --rf-accent-contrast: #ffffff;
+  --rf-accent-2: #9c8465;
+  --rf-chip-bg: #dfe1e5;
+  --rf-chip-text: #43505c;
+  --rf-danger: #a8493f;
+  --rf-success: #47765a;
+  --rf-chart-grid: #d7dadf;
+  --rf-font-display: "Inter", sans-serif;
+  --rf-font-body: "Inter", sans-serif;
+  --rf-font-mono: "IBM Plex Mono", monospace;
+}
+
 body {
   margin: 0;
   min-height: 100vh;

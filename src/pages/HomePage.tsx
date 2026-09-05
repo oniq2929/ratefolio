@@ -6,7 +6,6 @@ import {
   FolderKanban,
   PenLine,
   Quote,
-  Sparkles,
   Trash2,
   Users,
 } from 'lucide-react'
@@ -127,58 +126,48 @@ function HomePage() {
 
   return (
     <main className="mx-auto max-w-xl px-4 py-10">
-      {/* ヒーロー: 実物のRadarChartに見本データを入れて、一目で
-          「多軸評価アプリ」だと伝わるようにする(数値・軸名はすべてダミー) */}
-      <div className="rf-surface flex flex-col items-center gap-4 rounded-2xl p-6">
-        <RadarChart
-          axes={HERO_SAMPLE_AXES}
-          scaleMax={HERO_SAMPLE_SCALE_MAX}
-          size={196}
-        />
-        <div className="flex flex-col items-center gap-1">
-          <span className="rf-chip rounded-full px-3 py-1 text-xs font-semibold">
-            総合スコア(サンプル)
-          </span>
-          <span className="rf-heading text-4xl font-bold tracking-tight">
-            {HERO_SAMPLE_TOTAL}
-          </span>
-        </div>
-      </div>
-
-      <div className="rf-surface relative mt-6 overflow-hidden rounded-2xl p-6">
+      {/* ヒーロー: キャッチコピーと、実物のRadarChart(見本データ・ラベル非表示)を
+          横並びにして、スクロールなしで「記録を作成する」まで届く高さに収める */}
+      <div className="rf-surface relative overflow-hidden rounded-2xl p-5">
         <div
-          className="pointer-events-none absolute -top-8 -right-8 h-36 w-36 rounded-full blur-2xl"
-          style={{ background: 'var(--rf-accent-2)', opacity: 0.25 }}
+          className="pointer-events-none absolute -top-8 -right-8 h-32 w-32 rounded-full blur-2xl"
+          style={{ background: 'var(--rf-accent-2)', opacity: 0.2 }}
           aria-hidden="true"
         />
-        <Sparkles
-          className="pointer-events-none absolute top-6 right-10 opacity-40"
-          style={{ color: 'var(--rf-accent-2)' }}
-          size={18}
-          aria-hidden="true"
-        />
-        <Sparkles
-          className="pointer-events-none absolute right-24 bottom-8 opacity-30"
-          style={{ color: 'var(--rf-accent)' }}
-          size={14}
-          aria-hidden="true"
-        />
+        <span
+          className="rf-chip absolute top-4 right-4 rounded-full px-2.5 py-1 text-sm font-bold"
+          style={{ transform: 'rotate(-4deg)' }}
+        >
+          {HERO_SAMPLE_TOTAL}
+        </span>
 
-        <Quote
-          className="rf-accent relative opacity-60"
-          size={26}
-          style={{ transform: 'scaleX(-1)' }}
-          aria-hidden="true"
-        />
+        <div className="relative flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <Quote
+              className="rf-accent opacity-50"
+              size={18}
+              style={{ transform: 'scaleX(-1)' }}
+              aria-hidden="true"
+            />
+            <p className="rf-heading mt-1 text-xl leading-snug font-semibold tracking-tight">
+              <span className="inline-block">綴るほど</span>
+              <span className="inline-block">
+                <span className="rf-accent">「好き」</span>の解像度が
+              </span>
+              <span className="inline-block">上がっていく</span>
+            </p>
+            <p className="rf-muted mt-1 text-xs">自分だけの記録帳</p>
+          </div>
 
-        <p className="rf-heading relative mt-2 text-2xl leading-snug font-semibold tracking-tight">
-          <span className="inline-block">紡ぐほど</span>
-          <span className="inline-block">
-            <span className="rf-accent">「好き」</span>の解像度が
-          </span>
-          <span className="inline-block">上がっていく</span>
-        </p>
-        <p className="rf-muted relative mt-1.5 text-sm">自分だけの記録帳</p>
+          <div className="flex-shrink-0">
+            <RadarChart
+              axes={HERO_SAMPLE_AXES}
+              scaleMax={HERO_SAMPLE_SCALE_MAX}
+              size={124}
+              showLabels={false}
+            />
+          </div>
+        </div>
       </div>
 
       <Link

@@ -6,16 +6,22 @@ import {
   type ReactNode,
 } from 'react'
 
-export type ThemeName = 'field-notes' | 'radar-bright' | 'soft-grid'
+export type ThemeName = 'field-notes' | 'radar-bright' | 'soft-grid' | 'quiet-slate'
 
 const STORAGE_KEY = 'ratefolio-theme'
 const DEFAULT_THEME: ThemeName = 'field-notes'
-const THEME_NAMES: ThemeName[] = ['field-notes', 'radar-bright', 'soft-grid']
+const THEME_NAMES: ThemeName[] = [
+  'field-notes',
+  'radar-bright',
+  'soft-grid',
+  'quiet-slate',
+]
 
 export const THEME_LABELS: Record<ThemeName, string> = {
   'field-notes': 'Field Notes',
   'radar-bright': 'Radar Bright',
   'soft-grid': 'Soft Grid',
+  'quiet-slate': 'Quiet Slate',
 }
 
 interface ThemeContextValue {
