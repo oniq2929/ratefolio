@@ -73,6 +73,9 @@ function PublicPage() {
         }
       }
 
+      // 写真URLの発行を待たずに一覧を表示し、写真は後から差し込む
+      setLoading(false)
+
       const photoPaths = fetchedEntries
         .map((e) => e.photo_path)
         .filter((path): path is string => Boolean(path))
@@ -90,8 +93,6 @@ function PublicPage() {
           setPhotoUrls(urlMap)
         }
       }
-
-      setLoading(false)
     })
   }, [user])
 
@@ -342,35 +343,38 @@ function PublicPage() {
           return (
             <li
               key={entry.id}
-              className="rf-surface flex flex-col gap-4 rounded p-4 sm:flex-row"
+              className="rf-surface flex flex-col gap-4 rounded-2xl p-4 sm:flex-row sm:items-start sm:gap-5"
             >
-              {viewMode === 'ranking' && (
-                <div className="rf-heading rf-accent flex-shrink-0 text-lg font-bold">
-                  {index + 1}位
-                </div>
-              )}
               {photoUrl && (
                 <img
                   src={photoUrl}
                   alt={entry.target_name}
-                  className="h-24 w-24 flex-shrink-0 rounded object-cover"
+                  loading="lazy"
+                  className="h-56 w-full rounded-xl object-cover sm:h-52 sm:w-52 sm:flex-shrink-0"
                 />
               )}
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <h2 className="rf-heading font-semibold">
-                    {entry.target_name}
-                  </h2>
-                  <span className="rf-muted rf-mono text-xs">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h2 className="rf-heading flex items-center gap-2 text-xl font-bold">
+                      {viewMode === 'ranking' && (
+                        <span className="rf-accent flex-shrink-0">
+                          {index + 1}位
+                        </span>
+                      )}
+                      <span className="truncate">{entry.target_name}</span>
+                    </h2>
+                    <p className="rf-muted mt-0.5 text-xs">
+                      {entry.genre_name} ・{' '}
+                      {authorNames[entry.owner_id] ?? '不明なユーザー'}
+                    </p>
+                  </div>
+                  <span className="rf-muted rf-mono flex-shrink-0 text-xs">
                     {entry.entry_date}
                   </span>
                 </div>
-                <p className="rf-muted text-xs">
-                  {entry.genre_name} ・{' '}
-                  {authorNames[entry.owner_id] ?? '不明なユーザー'}
-                </p>
                 {entry.tags.length > 0 && (
-                  <p className="mt-1 flex flex-wrap gap-1 text-xs">
+                  <p className="mt-2 flex flex-wrap gap-1 text-xs">
                     {entry.tags.map((tag) => (
                       <span key={tag} className="rf-chip rounded-full px-2 py-0.5">
                         #{tag}
@@ -379,32 +383,32 @@ function PublicPage() {
                   </p>
                 )}
                 {entry.comment && (
-                  <p className="mt-1 text-sm">{entry.comment}</p>
+                  <p className="mt-2 text-sm">{entry.comment}</p>
                 )}
                 {viewMode === 'ranking' && rankingBasis === 'formula' && (
-                  <p className="rf-accent rf-mono mt-1 text-xs font-semibold">
+                  <p className="rf-accent rf-mono mt-2 text-xs font-semibold">
                     計算式スコア: {score}
                   </p>
                 )}
                 {viewMode === 'ranking' &&
                   rankingBasis !== 'formula' &&
                   score >= 0 && (
-                    <p className="rf-accent rf-mono mt-1 text-xs font-semibold">
+                    <p className="rf-accent rf-mono mt-2 text-xs font-semibold">
                       {rankingBasis === 'axis'
                         ? `${rankingAxisName}: ${Math.round(score * entry.scale_max)}/${entry.scale_max}`
                         : `総合: ${Math.round(score * 100)}%`}
                     </p>
                   )}
-              </div>
-              <div className="flex flex-shrink-0 justify-center">
-                <RadarChart
-                  axes={sortedScores.map((s) => ({
-                    name: s.axis_name,
-                    score: s.score,
-                  }))}
-                  scaleMax={entry.scale_max}
-                  size={140}
-                />
+                <div className="mt-3 flex justify-center">
+                  <RadarChart
+                    axes={sortedScores.map((s) => ({
+                      name: s.axis_name,
+                      score: s.score,
+                    }))}
+                    scaleMax={entry.scale_max}
+                    size={236}
+                  />
+                </div>
               </div>
             </li>
           )

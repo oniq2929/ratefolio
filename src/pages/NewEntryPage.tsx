@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { compressImage } from '../lib/compressImage'
 import { useAuth } from '../contexts/AuthContext'
 import RadarChart from '../components/RadarChart'
 import type { Axis, Genre } from '../types/database'
@@ -115,12 +116,13 @@ function NewEntryPage() {
     let photoPath: string | null = null
 
     if (photoFile) {
-      const ext = photoFile.name.split('.').pop() || 'jpg'
-      photoPath = `${user.id}/${entryId}.${ext}`
+      // 一覧の読み込みが重くならないよう、アップロード前に縮小・再圧縮する
+      const compressed = await compressImage(photoFile)
+      photoPath = `${user.id}/${entryId}.${compressed.ext}`
 
       const { error: uploadError } = await supabase.storage
         .from('entry-photos')
-        .upload(photoPath, photoFile, { contentType: photoFile.type })
+        .upload(photoPath, compressed.data, { contentType: compressed.contentType })
 
       if (uploadError) {
         setErrorMessage(uploadError.message)
@@ -234,7 +236,7 @@ function NewEntryPage() {
             「{createdEntry.targetName}」を記録しました。
           </p>
           <div className="mt-2 flex justify-center">
-            <RadarChart axes={createdEntry.axes} scaleMax={createdEntry.scaleMax} size={200} />
+            <RadarChart axes={createdEntry.axes} scaleMax={createdEntry.scaleMax} size={240} />
           </div>
           {createdEntry.photoPreviewUrl && (
             <div className="mt-2 flex justify-center">
