@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import HeroGraphic from '../components/HeroGraphic'
 import type { Entry } from '../types/database'
 
 // 使用頻度が高い順(記録一覧より、次に見る場所が多いもの)に並べる
@@ -85,7 +86,17 @@ function HomePage() {
 
   return (
     <main className="mx-auto max-w-xl px-4 py-10">
-      <p className="rf-heading text-2xl leading-snug font-semibold tracking-tight">
+      <div className="rf-surface relative h-40 overflow-hidden rounded-2xl sm:h-48">
+        <HeroGraphic />
+        <span
+          className="rf-chip absolute top-4 right-4 rounded-full px-2.5 py-1 text-xs font-semibold"
+          style={{ transform: 'rotate(-4deg)' }}
+        >
+          9.2
+        </span>
+      </div>
+
+      <p className="rf-heading mt-6 text-2xl leading-snug font-semibold tracking-tight">
         <span className="inline-block">紡ぐほど</span>
         <span className="inline-block">
           <span className="rf-accent">「好き」</span>の解像度が
