@@ -12,6 +12,13 @@ function translateError(message: string): string {
   if (message.includes('User already registered')) {
     return 'このメールアドレスは既に登録されています。'
   }
+  if (message.includes('Password should be at least')) {
+    return 'パスワードが短すぎます。8文字以上で入力してください。'
+  }
+  // 漏洩パスワード検知(HaveIBeenPwned連携)に引っかかった場合
+  if (message.includes('known to be weak') || message.includes('data breach')) {
+    return 'このパスワードは過去に漏洩が確認されているため使用できません。別のパスワードを設定してください。'
+  }
   return message
 }
 
@@ -128,11 +135,15 @@ function LoginPage() {
           <input
             type="password"
             required
-            minLength={6}
+            // Supabase側の最低文字数設定と合わせる
+            minLength={mode === 'signup' ? 8 : undefined}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="rf-input rounded px-3 py-2"
           />
+          {mode === 'signup' && (
+            <span className="rf-muted text-xs">8文字以上で入力してください。</span>
+          )}
         </label>
 
         {errorMessage && <p className="rf-danger text-sm">{errorMessage}</p>}

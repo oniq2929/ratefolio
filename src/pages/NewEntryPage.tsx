@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { compressImage } from '../lib/compressImage'
+import { compressImage, MAX_UPLOAD_BYTES } from '../lib/compressImage'
 import { useAuth } from '../contexts/AuthContext'
 import RadarChart from '../components/RadarChart'
 import RadarChartInput from '../components/RadarChartInput'
@@ -119,6 +119,15 @@ function NewEntryPage() {
     if (photoFile) {
       // 一覧の読み込みが重くならないよう、アップロード前に縮小・再圧縮する
       const compressed = await compressImage(photoFile)
+
+      if (compressed.data.size > MAX_UPLOAD_BYTES) {
+        setErrorMessage(
+          '写真のサイズが大きすぎます。別の写真を選ぶか、撮影サイズを小さくしてください。',
+        )
+        setSubmitting(false)
+        return
+      }
+
       photoPath = `${user.id}/${entryId}.${compressed.ext}`
 
       const { error: uploadError } = await supabase.storage

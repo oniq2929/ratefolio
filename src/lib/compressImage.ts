@@ -5,6 +5,11 @@
 const MAX_EDGE = 1280
 const JPEG_QUALITY = 0.8
 
+// アップロードを許可する上限。Supabase側のバケット設定と同じ値にしておき、
+// 超過時はアプリ側で分かりやすいエラーを出す
+// (バケット側だけに任せると、英語の分かりにくいエラーが表示されるため)
+export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024
+
 export interface CompressedImage {
   data: Blob | File
   contentType: string
