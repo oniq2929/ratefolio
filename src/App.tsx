@@ -13,6 +13,7 @@ import NewEntryPage from './pages/NewEntryPage'
 import EditEntryPage from './pages/EditEntryPage'
 import EntriesPage from './pages/EntriesPage'
 import PublicPage from './pages/PublicPage'
+import ProfilePage from './pages/ProfilePage'
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
                   element={<EditEntryPage />}
                 />
                 <Route path="/public" element={<PublicPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
               </Route>
             </Route>
           </Routes>

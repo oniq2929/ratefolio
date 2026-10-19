@@ -1,13 +1,19 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, Outlet } from 'react-router-dom'
+import { UserRound } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../contexts/ThemeContext'
 import ThemeSwitcher from './ThemeSwitcher'
+import AddToHomeGuide from './AddToHomeGuide'
+import { shouldShowAddToHomeGuide } from '../lib/pwa'
 
 function AppLayout() {
   const { signOut } = useAuth()
   const { theme } = useTheme()
   const headerRef = useRef<HTMLElement>(null)
+  // iPhoneのブラウザで開いていて、まだホーム画面に追加していない人に一度だけ手順を案内する
+  // (新規登録→メール確認→初回ログインの直後に表示されることになる)
+  const [showGuide, setShowGuide] = useState(() => shouldShowAddToHomeGuide())
 
   // ホーム画面に追加して起動したときのステータスバー色を、
   // 実際に描画されているヘッダーの背景色に合わせる
@@ -38,6 +44,14 @@ function AppLayout() {
             <Link to="/" className="rf-logo text-3xl font-semibold tracking-tight">
               Ratefolio
             </Link>
+            <Link
+              to="/profile"
+              aria-label="プロフィール"
+              className="ml-auto sm:hidden"
+              style={{ color: 'var(--rf-header-muted)' }}
+            >
+              <UserRound size={20} />
+            </Link>
             <button
               type="button"
               onClick={() => signOut()}
@@ -49,6 +63,14 @@ function AppLayout() {
           </div>
           <div className="flex items-center gap-4">
             <ThemeSwitcher />
+            <Link
+              to="/profile"
+              className="hidden items-center gap-1 text-sm underline sm:flex"
+              style={{ color: 'var(--rf-header-muted)' }}
+            >
+              <UserRound size={16} aria-hidden="true" />
+              プロフィール
+            </Link>
             <button
               type="button"
               onClick={() => signOut()}
@@ -61,6 +83,7 @@ function AppLayout() {
         </div>
       </header>
       <Outlet />
+      {showGuide && <AddToHomeGuide onClose={() => setShowGuide(false)} />}
     </div>
   )
 }

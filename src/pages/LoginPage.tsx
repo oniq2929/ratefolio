@@ -1,4 +1,6 @@
 import { useState, type FormEvent } from 'react'
+import AddToHomeGuide from '../components/AddToHomeGuide'
+import { shouldShowAddToHomeGuide } from '../lib/pwa'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
@@ -33,6 +35,7 @@ function LoginPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [infoMessage, setInfoMessage] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [showGuide, setShowGuide] = useState(false)
 
   // 既にログイン済みならログイン画面は不要なのでトップへ戻す
   if (user) {
@@ -70,6 +73,8 @@ function LoginPage() {
         setInfoMessage(
           '確認メールを送信しました。メール内のリンクを開いて登録を完了してください。',
         )
+        // メール確認のあとに開くのもこの端末のことが多いので、先にホーム画面への追加方法を案内する
+        if (shouldShowAddToHomeGuide()) setShowGuide(true)
       }
     }
 
@@ -157,6 +162,7 @@ function LoginPage() {
           {mode === 'login' ? 'ログイン' : '登録する'}
         </button>
       </form>
+      {showGuide && <AddToHomeGuide onClose={() => setShowGuide(false)} />}
     </main>
   )
 }

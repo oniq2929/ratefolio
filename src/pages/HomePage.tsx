@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import {
   Beer,
   ChevronRight,
@@ -15,12 +15,11 @@ import {
   Smile,
   Soup,
   Sparkle,
-  Trash2,
+  UserRound,
   Users,
   Wheat,
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import { useAuth } from '../contexts/AuthContext'
 import RadarChart, { radarMaxRadius, radarPointAt } from '../components/RadarChart'
 import type { Entry } from '../types/database'
 
@@ -82,9 +81,6 @@ type RecentPublicEntry = Pick<
 >
 
 function HomePage() {
-  const { user, signOut } = useAuth()
-  const navigate = useNavigate()
-
   const [recentEntries, setRecentEntries] = useState<RecentPublicEntry[]>([])
   const [authorNames, setAuthorNames] = useState<Record<string, string>>({})
 
@@ -114,39 +110,6 @@ function HomePage() {
         }
       })
   }, [])
-
-  const handleDeleteAccount = async () => {
-    if (!user) return
-
-    const confirmed = window.confirm(
-      'アカウントを削除しますか？ジャンル・記録・写真・計算式などすべてのデータが完全に削除され、元に戻せません。',
-    )
-    if (!confirmed) return
-
-    // Storage上の写真はDBの削除連鎖に含まれないため、先に自分の写真だけを消しておく
-    const { data: ownEntries } = await supabase
-      .from('entries')
-      .select('photo_path')
-      .eq('owner_id', user.id)
-      .not('photo_path', 'is', null)
-
-    const photoPaths = (ownEntries ?? [])
-      .map((entry) => entry.photo_path)
-      .filter((path): path is string => Boolean(path))
-
-    if (photoPaths.length > 0) {
-      await supabase.storage.from('entry-photos').remove(photoPaths)
-    }
-
-    const { error } = await supabase.rpc('delete_own_account')
-    if (error) {
-      window.alert('アカウントの削除に失敗しました: ' + error.message)
-      return
-    }
-
-    await signOut()
-    navigate('/login')
-  }
 
   return (
     <main className="mx-auto max-w-xl px-4 py-10">
@@ -349,19 +312,14 @@ function HomePage() {
       )}
 
       <div className="mt-10">
-        <button
-          type="button"
-          onClick={handleDeleteAccount}
-          className="rf-danger flex w-full items-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium"
-          style={{
-            background: 'color-mix(in srgb, var(--rf-danger) 10%, transparent)',
-            border: '1px solid color-mix(in srgb, var(--rf-danger) 25%, transparent)',
-          }}
+        <Link
+          to="/profile"
+          className="rf-surface flex w-full items-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium"
         >
-          <Trash2 size={16} aria-hidden="true" />
-          アカウントを削除する
-          <ChevronRight size={16} className="ml-auto" aria-hidden="true" />
-        </button>
+          <UserRound size={16} className="rf-accent" aria-hidden="true" />
+          プロフィール・アプリの共有
+          <ChevronRight size={16} className="rf-muted ml-auto" aria-hidden="true" />
+        </Link>
       </div>
     </main>
   )
