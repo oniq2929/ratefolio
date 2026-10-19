@@ -41,14 +41,43 @@ mkdirSync(new URL('../src/data/', import.meta.url), { recursive: true })
   const japan = simplify(raw, quantile(raw, 0.05))
   const prefectures = feature(japan, japan.objects.prefectures)
   const path = geoPath(geoIdentity()).digits(1)
+  const boundsOf = (coordinates) => path.bounds({ type: 'Polygon', coordinates })
+
+  // そのままだと小笠原諸島や沖縄まで含めた範囲になり、本州が小さく表示されてしまう。
+  // そこで一般的な日本地図と同じく、
+  //  - 東京都の小笠原諸島など、遠く離れた島は描かない
+  //  - 沖縄県は左上の空いている場所(日本海側)に移して、枠で囲んで表示する
+  const OKINAWA_SHIFT = [157, -490]
+  for (const f of prefectures.features) {
+    if (f.id === '13') {
+      f.geometry.coordinates = f.geometry.coordinates.filter((poly) => {
+        const [, [x1, y1]] = boundsOf(poly)
+        return x1 <= 480 && y1 <= 360
+      })
+    }
+    if (f.id === '47') {
+      f.geometry.coordinates = f.geometry.coordinates.map((poly) =>
+        poly.map((ring) => ring.map(([x, y]) => [x + OKINAWA_SHIFT[0], y + OKINAWA_SHIFT[1]])),
+      )
+    }
+  }
+  const okinawa = path.bounds(prefectures.features.find((f) => f.id === '47'))
+  const inset = {
+    x: Math.floor(okinawa[0][0] - 6),
+    y: Math.floor(okinawa[0][1] - 6),
+    width: Math.ceil(okinawa[1][0] - okinawa[0][0] + 12),
+    height: Math.ceil(okinawa[1][1] - okinawa[0][1] + 12),
+  }
   const [x0, y0, x1, y1] = path.bounds(prefectures).flat()
   const shapes = prefectures.features.map((f) => ({
     name: PREFECTURES[Number(f.id) - 1],
     d: path(f),
   }))
   const out = {
-    viewBox: [Math.floor(x0), Math.floor(y0), Math.ceil(x1 - x0), Math.ceil(y1 - y0)].join(' '),
+    viewBox: [Math.floor(x0) - 2, Math.floor(y0) - 2, Math.ceil(x1 - x0) + 4, Math.ceil(y1 - y0) + 4].join(' '),
     shapes,
+    // 沖縄を移動したことが分かるよう、周りに描く枠
+    insets: [inset],
   }
   writeFileSync(new URL('../src/data/japanMap.json', import.meta.url), JSON.stringify(out))
   console.log('japanMap.json', JSON.stringify(out).length, 'bytes')
