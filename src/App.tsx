@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage'
 import GenresPage from './pages/GenresPage'
 import NewGenrePage from './pages/NewGenrePage'
 import GenreFormulasPage from './pages/GenreFormulasPage'
+import GenrePropertiesPage from './pages/GenrePropertiesPage'
 import NewEntryPage from './pages/NewEntryPage'
 import EditEntryPage from './pages/EditEntryPage'
 import EntriesPage from './pages/EntriesPage'
@@ -28,6 +29,10 @@ function App() {
                 <Route
                   path="/genres/:genreId/formulas"
                   element={<GenreFormulasPage />}
+                />
+                <Route
+                  path="/genres/:genreId/properties"
+                  element={<GenrePropertiesPage />}
                 />
                 <Route path="/entries" element={<EntriesPage />} />
                 <Route path="/entries/new" element={<NewEntryPage />} />

@@ -2,6 +2,11 @@ import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import PropertyDefinitionsEditor, {
+  parseOptions,
+  validatePropertyDrafts,
+  type PropertyDraft,
+} from '../components/PropertyDefinitionsEditor'
 
 const MIN_AXES = 3
 const MAX_AXES = 8
@@ -14,6 +19,7 @@ function NewGenrePage() {
   const [name, setName] = useState('')
   const [scaleMax, setScaleMax] = useState(5)
   const [axisNames, setAxisNames] = useState<string[]>(['', '', ''])
+  const [propertyDrafts, setPropertyDrafts] = useState<PropertyDraft[]>([])
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -48,6 +54,11 @@ function NewGenrePage() {
       setErrorMessage('すべての評価軸名を入力してください。')
       return
     }
+    const propertyError = validatePropertyDrafts(propertyDrafts)
+    if (propertyError) {
+      setErrorMessage(propertyError)
+      return
+    }
 
     setSubmitting(true)
 
@@ -63,18 +74,34 @@ function NewGenrePage() {
       return
     }
 
-    const { error: axesError } = await supabase.from('axes').insert(
-      trimmedAxes.map((axisName, index) => ({
-        genre_id: genre.id,
-        name: axisName,
-        sort_order: index,
-      })),
-    )
+    // 評価軸とプロパティは互いに独立しているので、同時に送って待ち時間を短くする
+    const [axesRes, propertiesRes] = await Promise.all([
+      supabase.from('axes').insert(
+        trimmedAxes.map((axisName, index) => ({
+          genre_id: genre.id,
+          name: axisName,
+          sort_order: index,
+        })),
+      ),
+      propertyDrafts.length > 0
+        ? supabase.from('genre_properties').insert(
+            propertyDrafts.map((draft, index) => ({
+              genre_id: genre.id,
+              name: draft.name.trim(),
+              type: draft.type,
+              options: draft.type === 'select' ? parseOptions(draft.optionsInput) : [],
+              sort_order: index,
+            })),
+          )
+        : Promise.resolve({ error: null }),
+    ])
 
-    if (axesError) {
-      // 軸の作成に失敗した場合、軸のないジャンルだけが残らないよう後片付けする
+    const childError = axesRes.error ?? propertiesRes.error
+    if (childError) {
+      // 作成に失敗した場合、中途半端なジャンルが残らないよう後片付けする
+      // (ジャンルを消せば、紐づく評価軸・プロパティも連鎖して消える)
       await supabase.from('genres').delete().eq('id', genre.id)
-      setErrorMessage(axesError.message)
+      setErrorMessage(childError.message)
       setSubmitting(false)
       return
     }
@@ -146,6 +173,14 @@ function NewGenrePage() {
           >
             + 軸を追加
           </button>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <span className="text-sm">プロパティ（任意）</span>
+          <p className="rf-muted text-xs">
+            都道府県・店・温度など、記録ごとに入力したい項目。あとから追加・変更もできます。
+          </p>
+          <PropertyDefinitionsEditor drafts={propertyDrafts} onChange={setPropertyDrafts} />
         </div>
 
         {errorMessage && <p className="rf-danger text-sm">{errorMessage}</p>}

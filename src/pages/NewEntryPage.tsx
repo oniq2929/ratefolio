@@ -1,13 +1,27 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { compressImage, MAX_UPLOAD_BYTES } from '../lib/compressImage'
+import {
+  compressImage,
+  describeUploadError,
+  PhotoError,
+  type CompressedImage,
+} from '../lib/compressImage'
+import {
+  buildPropertyFields,
+  fieldsToEntryProperties,
+  type PropertyField,
+} from '../lib/properties'
+import PropertyInputs from '../components/PropertyInputs'
 import { useAuth } from '../contexts/AuthContext'
 import RadarChart from '../components/RadarChart'
 import RadarChartInput from '../components/RadarChartInput'
-import type { Axis, Genre } from '../types/database'
+import type { Axis, Genre, GenreProperty } from '../types/database'
 
-type GenreWithAxes = Genre & { axes: Axis[] }
+type GenreWithAxes = Genre & { axes: Axis[]; genre_properties: GenreProperty[] }
+
+// 前回選んだジャンルを覚えておき、連続して記録するときの手間を減らす
+const LAST_GENRE_KEY = 'rf-last-genre-id'
 
 function todayIsoDate() {
   return new Date().toISOString().slice(0, 10)
@@ -43,18 +57,30 @@ function NewEntryPage() {
   const [createdEntry, setCreatedEntry] = useState<CreatedEntryPreview | null>(
     null,
   )
+  const [propertyFields, setPropertyFields] = useState<PropertyField[]>([])
   const photoInputRef = useRef<HTMLInputElement>(null)
+  // 写真を選んだ瞬間に縮小処理を始めておき、保存ボタンを押したときの待ち時間を減らす
+  const compressedPhotoRef = useRef<Promise<CompressedImage> | null>(null)
 
   useEffect(() => {
     supabase
       .from('genres')
-      .select('*, axes(*)')
+      .select('*, axes(*), genre_properties(*)')
       .order('created_at', { ascending: false })
       .then(({ data, error }) => {
         if (error) {
           setErrorMessage(error.message)
         } else {
-          setGenres((data ?? []) as GenreWithAxes[])
+          const fetched = (data ?? []) as GenreWithAxes[]
+          setGenres(fetched)
+          let lastGenreId: string | null = null
+          try {
+            lastGenreId = localStorage.getItem(LAST_GENRE_KEY)
+          } catch {
+            // プライベートブラウズ等で使えない場合は覚えない
+          }
+          const lastGenre = fetched.find((g) => g.id === lastGenreId)
+          if (lastGenre) selectGenre(lastGenre)
         }
         setLoadingGenres(false)
       })
@@ -73,15 +99,25 @@ function NewEntryPage() {
     [selectedGenre],
   )
 
-  const handleSelectGenre = (genreId: string) => {
-    setSelectedGenreId(genreId)
-    const genre = genres.find((g) => g.id === genreId)
-    if (!genre) return
+  const selectGenre = (genre: GenreWithAxes) => {
+    setSelectedGenreId(genre.id)
     const initialScores: Record<string, number> = {}
     genre.axes.forEach((axis) => {
       initialScores[axis.id] = defaultScoreFor(genre.scale_max)
     })
     setScores(initialScores)
+    setPropertyFields(buildPropertyFields(genre.genre_properties))
+  }
+
+  const handleSelectGenre = (genreId: string) => {
+    const genre = genres.find((g) => g.id === genreId)
+    if (!genre) return
+    selectGenre(genre)
+    try {
+      localStorage.setItem(LAST_GENRE_KEY, genre.id)
+    } catch {
+      // 保存できなくても記録には影響しない
+    }
   }
 
   const handlePhotoChange = (file: File | null) => {
@@ -90,6 +126,9 @@ function NewEntryPage() {
     }
     setPhotoFile(file)
     setPhotoPreviewUrl(file ? URL.createObjectURL(file) : null)
+    compressedPhotoRef.current = file ? compressImage(file) : null
+    // 未処理のエラー扱いにならないよう、ここでは失敗を握りつぶし、保存時に改めて扱う
+    compressedPhotoRef.current?.catch(() => {})
   }
 
   const handleSubmit = async (event: FormEvent) => {
@@ -114,77 +153,67 @@ function NewEntryPage() {
     // Storageの命名規則({owner_id}/{entry_id}.拡張子)に合わせるため、
     // entries行のidをクライアント側であらかじめ生成しておく
     const entryId = crypto.randomUUID()
-    let photoPath: string | null = null
+    let compressed: CompressedImage | null = null
 
     if (photoFile) {
-      // 一覧の読み込みが重くならないよう、アップロード前に縮小・再圧縮する
-      const compressed = await compressImage(photoFile)
-
-      if (compressed.data.size > MAX_UPLOAD_BYTES) {
+      try {
+        // 写真選択時に始めておいた縮小処理の結果を受け取る(多くの場合は完了済み)
+        compressed = await (compressedPhotoRef.current ?? compressImage(photoFile))
+      } catch (error) {
         setErrorMessage(
-          '写真のサイズが大きすぎます。別の写真を選ぶか、撮影サイズを小さくしてください。',
+          error instanceof PhotoError ? error.message : '写真の読み込みに失敗しました。',
         )
         setSubmitting(false)
         return
       }
-
-      photoPath = `${user.id}/${entryId}.${compressed.ext}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('entry-photos')
-        .upload(photoPath, compressed.data, { contentType: compressed.contentType })
-
-      if (uploadError) {
-        setErrorMessage(uploadError.message)
-        setSubmitting(false)
-        return
-      }
     }
 
-    const { data: entry, error: entryError } = await supabase
-      .from('entries')
-      .insert({
-        id: entryId,
-        owner_id: user.id,
-        genre_id: selectedGenre.id,
-        genre_name: selectedGenre.name,
-        scale_max: selectedGenre.scale_max,
-        target_name: trimmedName,
-        entry_date: entryDate,
-        comment: comment.trim() || null,
-        tags,
-        is_public: isPublic,
-        photo_path: photoPath,
-      })
-      .select()
-      .single()
+    const photoPath = compressed ? `${user.id}/${entryId}.${compressed.ext}` : null
 
-    if (entryError || !entry) {
-      if (photoPath) {
+    // 写真のアップロードと記録の保存は互いに待つ必要がないので、同時に送る。
+    // 記録とスコアの保存は、DB関数(create_entry)で1回の通信・1トランザクションにまとめている
+    const [uploadRes, entryRes] = await Promise.all([
+      compressed && photoPath
+        ? supabase.storage
+            .from('entry-photos')
+            .upload(photoPath, compressed.data, { contentType: compressed.contentType })
+        : Promise.resolve({ error: null }),
+      supabase.rpc('create_entry', {
+        p_entry: {
+          id: entryId,
+          genre_id: selectedGenre.id,
+          genre_name: selectedGenre.name,
+          scale_max: selectedGenre.scale_max,
+          target_name: trimmedName,
+          entry_date: entryDate,
+          comment: comment.trim() || null,
+          tags,
+          is_public: isPublic,
+          photo_path: photoPath,
+          properties: fieldsToEntryProperties(propertyFields),
+        },
+        p_scores: sortedAxes.map((axis) => ({
+          axis_id: axis.id,
+          axis_name: axis.name,
+          sort_order: axis.sort_order,
+          score: scores[axis.id] ?? defaultScoreFor(selectedGenre.scale_max),
+        })),
+      }),
+    ])
+
+    if (uploadRes.error || entryRes.error) {
+      // 片方だけ成功した場合は、残ったほうを片付けて「写真のない記録」「記録のない写真」を残さない
+      if (!entryRes.error) {
+        await supabase.from('entries').delete().eq('id', entryId)
+      }
+      if (!uploadRes.error && photoPath) {
         await supabase.storage.from('entry-photos').remove([photoPath])
       }
-      setErrorMessage(entryError?.message ?? '記録の作成に失敗しました。')
-      setSubmitting(false)
-      return
-    }
-
-    const { error: scoresError } = await supabase.from('entry_scores').insert(
-      sortedAxes.map((axis) => ({
-        entry_id: entry.id,
-        axis_id: axis.id,
-        axis_name: axis.name,
-        sort_order: axis.sort_order,
-        score: scores[axis.id],
-      })),
-    )
-
-    if (scoresError) {
-      // スコアの作成に失敗した場合、スコアのない記録・アップロード済みの写真を残さないよう後片付けする
-      await supabase.from('entries').delete().eq('id', entry.id)
-      if (photoPath) {
-        await supabase.storage.from('entry-photos').remove([photoPath])
-      }
-      setErrorMessage(scoresError.message)
+      setErrorMessage(
+        uploadRes.error
+          ? describeUploadError(uploadRes.error.message)
+          : (entryRes.error?.message ?? '記録の作成に失敗しました。'),
+      )
       setSubmitting(false)
       return
     }
@@ -204,11 +233,13 @@ function NewEntryPage() {
     setIsPublic(false)
     setPhotoFile(null)
     setPhotoPreviewUrl(null)
+    compressedPhotoRef.current = null
     if (photoInputRef.current) {
       photoInputRef.current.value = ''
     }
-    handleSelectGenre(selectedGenre.id)
+    selectGenre(selectedGenre)
     setSubmitting(false)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   if (loadingGenres) {
@@ -326,6 +357,15 @@ function NewEntryPage() {
               </div>
             </div>
 
+            <PropertyInputs
+              fields={propertyFields}
+              onChange={(key, raw) =>
+                setPropertyFields((prev) =>
+                  prev.map((f) => (f.key === key ? { ...f, raw } : f)),
+                )
+              }
+            />
+
             <label className="flex flex-col gap-1 text-sm">
               写真（任意、1枚まで）
               <input
@@ -396,7 +436,7 @@ function NewEntryPage() {
               disabled={submitting}
               className="rf-btn-primary mt-2 rounded px-3 py-2 text-sm disabled:opacity-50"
             >
-              記録する
+              {submitting ? '保存中...' : '記録する'}
             </button>
           </>
         )}

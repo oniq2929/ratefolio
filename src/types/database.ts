@@ -40,6 +40,8 @@ export interface Entry {
   comment: string | null
   tags: string[]
   is_public: boolean
+  /** プロパティ値のスナップショット(都道府県・店・温度など) */
+  properties: EntryProperty[]
   created_at: string
   updated_at: string
 }
@@ -63,4 +65,26 @@ export interface Formula {
   /** 軸名 -> 重み のマップ。例: { "コシ": 3, "出汁": 1, "量": -1 } */
   weights: Record<string, number>
   created_at: string
+}
+
+/** プロパティの型(Obsidianのプロパティに相当) */
+export type PropertyType = 'text' | 'number' | 'select' | 'prefecture' | 'country'
+
+/** ジャンルごとのプロパティ定義(0005_properties_and_fast_save.sql) */
+export interface GenreProperty {
+  id: string
+  genre_id: string
+  name: string
+  type: PropertyType
+  /** select型の選択肢 */
+  options: string[]
+  sort_order: number
+  created_at: string
+}
+
+/** 記録に保存されるプロパティ値のスナップショット */
+export interface EntryProperty {
+  name: string
+  type: PropertyType
+  value: string | number
 }

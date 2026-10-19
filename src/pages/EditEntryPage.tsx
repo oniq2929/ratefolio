@@ -1,12 +1,27 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { compressImage, MAX_UPLOAD_BYTES } from '../lib/compressImage'
+import {
+  compressImage,
+  describeUploadError,
+  PhotoError,
+  type CompressedImage,
+} from '../lib/compressImage'
+import {
+  buildPropertyFields,
+  fieldsToEntryProperties,
+  type PropertyField,
+} from '../lib/properties'
+import PropertyInputs from '../components/PropertyInputs'
 import { useAuth } from '../contexts/AuthContext'
 import RadarChartInput from '../components/RadarChartInput'
-import type { Entry, EntryScore } from '../types/database'
+import type { Entry, EntryScore, GenreProperty } from '../types/database'
 
-type EntryWithScores = Entry & { entry_scores: EntryScore[] }
+// genresは、ジャンルが削除済みならnullになる
+type EntryWithScores = Entry & {
+  entry_scores: EntryScore[]
+  genres: { genre_properties: GenreProperty[] } | null
+}
 
 function todayIsoDate() {
   return new Date().toISOString().slice(0, 10)
@@ -29,12 +44,15 @@ function EditEntryPage() {
   const [tagsInput, setTagsInput] = useState('')
   const [comment, setComment] = useState('')
   const [isPublic, setIsPublic] = useState(false)
+  const [propertyFields, setPropertyFields] = useState<PropertyField[]>([])
 
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState<string | null>(null)
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null)
   const [removePhoto, setRemovePhoto] = useState(false)
   const photoInputRef = useRef<HTMLInputElement>(null)
+  // 写真を選んだ瞬間に縮小処理を始めておき、保存時の待ち時間を減らす
+  const compressedPhotoRef = useRef<Promise<CompressedImage> | null>(null)
 
   useEffect(() => {
     if (!user || !entryId) return
@@ -42,7 +60,7 @@ function EditEntryPage() {
     // RLSに加えて、自分の記録であることをクエリでも明示的に絞り込む
     supabase
       .from('entries')
-      .select('*, entry_scores(*)')
+      .select('*, entry_scores(*), genres(genre_properties(*))')
       .eq('id', entryId)
       .eq('owner_id', user.id)
       .single()
@@ -60,6 +78,12 @@ function EditEntryPage() {
         setTagsInput(fetched.tags.join(', '))
         setComment(fetched.comment ?? '')
         setIsPublic(fetched.is_public)
+        setPropertyFields(
+          buildPropertyFields(
+            fetched.genres?.genre_properties ?? [],
+            fetched.properties ?? [],
+          ),
+        )
         setScores(
           Object.fromEntries(fetched.entry_scores.map((s) => [s.id, s.score])),
         )
@@ -79,6 +103,8 @@ function EditEntryPage() {
     setPhotoFile(file)
     setPhotoPreviewUrl(file ? URL.createObjectURL(file) : null)
     if (file) setRemovePhoto(false)
+    compressedPhotoRef.current = file ? compressImage(file) : null
+    compressedPhotoRef.current?.catch(() => {})
   }
 
   // 「2回目を食べた」のように、同じ対象を再訪したときの記述を足しやすくする
@@ -101,37 +127,23 @@ function EditEntryPage() {
 
     setSubmitting(true)
 
-    let photoPath = entry.photo_path
     const oldPhotoPath = entry.photo_path
+    let photoPath = removePhoto ? null : entry.photo_path
+    let compressed: CompressedImage | null = null
 
     if (photoFile) {
-      const compressed = await compressImage(photoFile)
-
-      if (compressed.data.size > MAX_UPLOAD_BYTES) {
+      try {
+        compressed = await (compressedPhotoRef.current ?? compressImage(photoFile))
+      } catch (error) {
         setErrorMessage(
-          '写真のサイズが大きすぎます。別の写真を選ぶか、撮影サイズを小さくしてください。',
+          error instanceof PhotoError ? error.message : '写真の読み込みに失敗しました。',
         )
         setSubmitting(false)
         return
       }
-
-      const newPath = `${user.id}/${entry.id}.${compressed.ext}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('entry-photos')
-        .upload(newPath, compressed.data, {
-          contentType: compressed.contentType,
-          upsert: true,
-        })
-
-      if (uploadError) {
-        setErrorMessage(uploadError.message)
-        setSubmitting(false)
-        return
-      }
-      photoPath = newPath
-    } else if (removePhoto) {
-      photoPath = null
+      // 毎回別のファイル名にして上書き(upsert)を避ける。
+      // 上書きは権限の条件が厳しく失敗しやすいうえ、古い画像がキャッシュで表示され続けることがある
+      photoPath = `${user.id}/${entry.id}-${Date.now()}.${compressed.ext}`
     }
 
     const tags = tagsInput
@@ -139,45 +151,50 @@ function EditEntryPage() {
       .map((tag) => tag.trim())
       .filter(Boolean)
 
-    const { error: updateError } = await supabase
-      .from('entries')
-      .update({
+    // 新しい写真のアップロードを先に済ませてから記録を更新する
+    // (逆にすると、写真の無いパスを記録が指す瞬間ができてしまう)
+    if (compressed && photoPath) {
+      const { error: uploadError } = await supabase.storage
+        .from('entry-photos')
+        .upload(photoPath, compressed.data, { contentType: compressed.contentType })
+      if (uploadError) {
+        setErrorMessage(describeUploadError(uploadError.message))
+        setSubmitting(false)
+        return
+      }
+    }
+
+    // 記録本体と、変更のあったスコアをDB関数(update_entry)で1回の通信にまとめて更新する
+    const changedScores = entry.entry_scores
+      .filter((s) => scores[s.id] !== undefined && scores[s.id] !== s.score)
+      .map((s) => ({ id: s.id, score: scores[s.id] }))
+
+    const { error: updateError } = await supabase.rpc('update_entry', {
+      p_id: entry.id,
+      p_entry: {
         target_name: trimmedName,
         entry_date: entryDate,
         comment: comment.trim() || null,
         tags,
         is_public: isPublic,
         photo_path: photoPath,
-      })
-      .eq('id', entry.id)
-      .eq('owner_id', user.id)
+        properties: fieldsToEntryProperties(propertyFields),
+      },
+      p_scores: changedScores,
+    })
 
     if (updateError) {
+      if (compressed && photoPath) {
+        await supabase.storage.from('entry-photos').remove([photoPath])
+      }
       setErrorMessage(updateError.message)
       setSubmitting(false)
       return
     }
 
-    // スコアは変更があった軸だけ更新する
-    const changed = entry.entry_scores.filter(
-      (s) => scores[s.id] !== undefined && scores[s.id] !== s.score,
-    )
-    for (const scoreRow of changed) {
-      const { error: scoreError } = await supabase
-        .from('entry_scores')
-        .update({ score: scores[scoreRow.id] })
-        .eq('id', scoreRow.id)
-
-      if (scoreError) {
-        setErrorMessage(scoreError.message)
-        setSubmitting(false)
-        return
-      }
-    }
-
-    // 写真を差し替え/削除したあとに、不要になった古いファイルを片付ける
+    // 写真を差し替え/削除したあとに、不要になった古いファイルを片付ける(完了を待たずに画面を移る)
     if (oldPhotoPath && oldPhotoPath !== photoPath) {
-      await supabase.storage.from('entry-photos').remove([oldPhotoPath])
+      void supabase.storage.from('entry-photos').remove([oldPhotoPath])
     }
 
     navigate('/entries')
@@ -263,6 +280,15 @@ function EditEntryPage() {
             />
           </div>
         </div>
+
+        <PropertyInputs
+          fields={propertyFields}
+          onChange={(key, raw) =>
+            setPropertyFields((prev) =>
+              prev.map((f) => (f.key === key ? { ...f, raw } : f)),
+            )
+          }
+        />
 
         <div className="flex flex-col gap-2 text-sm">
           写真

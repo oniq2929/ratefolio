@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import type { Axis, Genre } from '../types/database'
+import type { Axis, Genre, GenreProperty } from '../types/database'
+import { PROPERTY_TYPE_LABELS } from '../lib/properties'
 
-type GenreWithAxes = Genre & { axes: Axis[] }
+type GenreWithAxes = Genre & { axes: Axis[]; genre_properties: GenreProperty[] }
 
 function GenresPage() {
   const [genres, setGenres] = useState<GenreWithAxes[]>([])
@@ -15,7 +16,7 @@ function GenresPage() {
 
     supabase
       .from('genres')
-      .select('*, axes(*)')
+      .select('*, axes(*), genre_properties(*)')
       .order('created_at', { ascending: false })
       .then(({ data, error }) => {
         if (!active) return
@@ -87,12 +88,29 @@ function GenresPage() {
                 .map((axis) => axis.name)
                 .join(' / ')}
             </p>
-            <Link
-              to={`/genres/${genre.id}/formulas`}
-              className="rf-link mt-2 inline-block text-xs underline"
-            >
-              計算式を管理
-            </Link>
+            {genre.genre_properties.length > 0 && (
+              <p className="rf-muted mt-1 text-xs">
+                プロパティ:{' '}
+                {[...genre.genre_properties]
+                  .sort((a, b) => a.sort_order - b.sort_order)
+                  .map((p) => `${p.name}（${PROPERTY_TYPE_LABELS[p.type]}）`)
+                  .join(' / ')}
+              </p>
+            )}
+            <div className="mt-2 flex gap-4">
+              <Link
+                to={`/genres/${genre.id}/properties`}
+                className="rf-link text-xs underline"
+              >
+                プロパティを管理
+              </Link>
+              <Link
+                to={`/genres/${genre.id}/formulas`}
+                className="rf-link text-xs underline"
+              >
+                計算式を管理
+              </Link>
+            </div>
           </li>
         ))}
       </ul>
