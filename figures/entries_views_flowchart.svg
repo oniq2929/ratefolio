@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" font-family="sans-serif">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker></defs>
+<rect width="900" height="500" fill="#ffffff"/>
+<text x="450" y="30" text-anchor="middle" font-size="18" font-weight="bold">記録一覧（検索・表示切替・CSV）の処理フロー</text>
+<rect x="30" y="60" width="250" height="74" rx="8" fill="#e8f0fe" stroke="#4c6ef5"/><text x="155" y="85" text-anchor="middle" font-size="13" font-weight="bold">自分の記録を取得</text><text x="155" y="101" text-anchor="middle" font-size="11">owner_id = 自分</text><text x="155" y="117" text-anchor="middle" font-size="11">entry_scores込み</text>
+<rect x="330" y="60" width="250" height="74" rx="8" fill="#fff3bf" stroke="#f59f00"/><text x="455" y="93" text-anchor="middle" font-size="13" font-weight="bold">ジャンルで絞る</text><text x="455" y="109" text-anchor="middle" font-size="11">genreEntries</text>
+<line x1="280" y1="97" x2="328" y2="97" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="630" y="60" width="240" height="74" rx="8" fill="#fff3bf" stroke="#f59f00"/><text x="750" y="85" text-anchor="middle" font-size="13" font-weight="bold">項目一覧を作る</text><text x="750" y="101" text-anchor="middle" font-size="11">buildEntryFields</text><text x="750" y="117" text-anchor="middle" font-size="11">基本項目+評価軸+プロパティ</text>
+<line x1="580" y1="97" x2="628" y2="97" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="330" y="180" width="540" height="74" rx="8" fill="#ffe8cc" stroke="#e8590c"/><text x="600" y="205" text-anchor="middle" font-size="13" font-weight="bold">条件で絞り込み → キーワード → 並び替え</text><text x="600" y="221" text-anchor="middle" font-size="11">applyFilters: すべての条件をAND</text><text x="600" y="237" text-anchor="middle" font-size="11">visibleEntries</text>
+<line x1="750" y1="134" x2="750" y2="178" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="30" y="320" width="190" height="74" rx="8" fill="#d3f9d8" stroke="#2f9e44"/><text x="125" y="353" text-anchor="middle" font-size="13" font-weight="bold">カード</text><text x="125" y="369" text-anchor="middle" font-size="11">写真＋レーダー</text>
+<rect x="240" y="320" width="190" height="74" rx="8" fill="#d3f9d8" stroke="#2f9e44"/><text x="335" y="353" text-anchor="middle" font-size="13" font-weight="bold">表</text><text x="335" y="369" text-anchor="middle" font-size="11">列見出しで並び替え</text>
+<rect x="450" y="320" width="190" height="74" rx="8" fill="#d3f9d8" stroke="#2f9e44"/><text x="545" y="345" text-anchor="middle" font-size="13" font-weight="bold">散布図</text><text x="545" y="361" text-anchor="middle" font-size="11">数値項目を2つ選択</text><text x="545" y="377" text-anchor="middle" font-size="11">重なりは件数付き円</text>
+<rect x="660" y="320" width="210" height="74" rx="8" fill="#d3f9d8" stroke="#2f9e44"/><text x="765" y="345" text-anchor="middle" font-size="13" font-weight="bold">地図</text><text x="765" y="361" text-anchor="middle" font-size="11">都道府県/国の件数で</text><text x="765" y="377" text-anchor="middle" font-size="11">塗り分け・タップで一覧</text>
+<line x1="600" y1="254" x2="125" y2="318" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="600" y1="254" x2="335" y2="318" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="600" y1="254" x2="545" y2="318" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="600" y1="254" x2="765" y2="318" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="330" y="420" width="300" height="60" rx="8" fill="#f1f3f5" stroke="#868e96"/><text x="480" y="446" text-anchor="middle" font-size="13" font-weight="bold">CSVで出力</text><text x="480" y="462" text-anchor="middle" font-size="11">表示中の記録 × 全項目（BOM付き）</text>
+<line x1="480" y1="254" x2="480" y2="418" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+</svg>

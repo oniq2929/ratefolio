@@ -3,8 +3,8 @@ title: "entries 報告書"
 type: report
 project: "Ratefolio"
 created: "2026-09-01"
-updated: "2026-09-01"
-version: "v1.1"
+updated: "2026-10-19"
+version: "v1.2"
 tags:
   - type/report
   - "project/Ratefolio"
@@ -24,13 +24,14 @@ aliases:
 | 作成日 | 2026-09-01 |
 | 対象コード | `src/components/RadarChart.tsx`, `src/pages/NewEntryPage.tsx` |
 | 作成者 | Claude Code |
-| 版数 | v1.1 |
+| 版数 | v1.2 |
 
 ## 改訂履歴
 | 版 | 日付 | 変更内容 |
 |---|---|---|
 | v1.0 | 2026-09-01 | 初版作成 |
 | v1.1 | 2026-09-01 | 写真アップロード機能を追加(Storage連携、entryIdのクライアント側生成、失敗時の後片付け拡張) |
+| v1.2 | 2026-10-19 | 保存処理をDB関数create_entryに統合し写真アップロードと並列化、プロパティ入力・前回ジャンルの自動選択を追加（詳細は[[properties_report]]） |
 
 ---
 

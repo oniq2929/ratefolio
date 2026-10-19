@@ -3,8 +3,8 @@ title: "entries_list 報告書"
 type: report
 project: "Ratefolio"
 created: "2026-09-02"
-updated: "2026-09-02"
-version: "v1.0"
+updated: "2026-10-19"
+version: "v1.1"
 tags:
   - type/report
   - "project/Ratefolio"
@@ -24,12 +24,13 @@ aliases:
 | 作成日 | 2026-09-02 |
 | 対象コード | `src/pages/EntriesPage.tsx`, `src/components/AppLayout.tsx` |
 | 作成者 | Claude Code |
-| 版数 | v1.0 |
+| 版数 | v1.1 |
 
 ## 改訂履歴
 | 版 | 日付 | 変更内容 |
 |---|---|---|
 | v1.0 | 2026-09-02 | 初版作成 |
+| v1.1 | 2026-10-19 | 詳細検索・表/散布図/地図表示・CSV出力を追加、カードにプロパティを表示（詳細は[[entries_views_report]]） |
 
 ---
 

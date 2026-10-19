@@ -20,8 +20,8 @@ export function buildCsv(entries: EntryWithScores[], fields: EntryField[]) {
 }
 
 export function downloadCsv(filename: string, csv: string) {
-  // 先頭のBOM(﻿)は、Excelで開いたときに日本語が文字化けしないようにするための印
-  const blob = new Blob(['﻿', csv], { type: 'text/csv;charset=utf-8' })
+  // 先頭のBOM(\uFEFF)は、Excelで開いたときに日本語が文字化けしないようにするための印
+  const blob = new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url

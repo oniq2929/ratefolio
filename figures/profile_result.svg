@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="sans-serif">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker></defs>
+<rect width="900" height="520" fill="#ffffff"/>
+<text x="450" y="30" text-anchor="middle" font-size="18" font-weight="bold">画面構成: プロフィール画面（左）とホーム追加の案内（右）</text>
+<rect x="60" y="55" width="330" height="440" rx="18" fill="#f8f5eb" stroke="#ccc"/>
+<rect x="80" y="75" width="290" height="120" rx="8" fill="#f1f3f5" stroke="#868e96"/><text x="225" y="115" text-anchor="middle" font-size="13" font-weight="bold">アカウント情報</text><text x="225" y="131" text-anchor="middle" font-size="11">表示名 [ たなか        ] [保存]</text><text x="225" y="147" text-anchor="middle" font-size="11">メールアドレス: xxx@example.com</text><text x="225" y="163" text-anchor="middle" font-size="11">新しいパスワード [      ] [変更]</text>
+<rect x="80" y="210" width="290" height="170" rx="8" fill="#f1f3f5" stroke="#868e96"/><text x="225" y="259" text-anchor="middle" font-size="13" font-weight="bold">Ratefolioを友達に紹介</text><text x="225" y="275" text-anchor="middle" font-size="11">┌──────┐</text><text x="225" y="291" text-anchor="middle" font-size="11">│  QRコード │</text><text x="225" y="307" text-anchor="middle" font-size="11">└──────┘</text><text x="225" y="323" text-anchor="middle" font-size="11">https://(アプリのURL)</text><text x="225" y="339" text-anchor="middle" font-size="11">[共有] [URLをコピー]</text>
+<rect x="80" y="395" width="290" height="36" rx="8" fill="#f1f3f5" stroke="#868e96"/><text x="225" y="417" text-anchor="middle" font-size="13" font-weight="bold">ホーム画面に追加する方法 ›</text>
+<rect x="80" y="445" width="290" height="36" rx="8" fill="#ffe3e3" stroke="#e03131"/><text x="225" y="467" text-anchor="middle" font-size="13" font-weight="bold">アカウントを削除する ›</text>
+<rect x="500" y="80" width="340" height="380" rx="18" fill="#ffffff" stroke="#999"/>
+<text x="520" y="115" font-size="15" font-weight="bold">ホーム画面に追加しましょう</text>
+<text x="520" y="138" font-size="11" fill="#666">アプリのようにワンタップで開けるようになります</text>
+<text x="530" y="185" font-size="13">① 画面下の共有ボタン（□↑）をタップ</text>
+<text x="530" y="225" font-size="13">② 「ホーム画面に追加」をタップ</text>
+<text x="530" y="265" font-size="13">③ 右上の「追加」をタップ</text>
+<text x="530" y="330" font-size="11" fill="#666">☑ 次回から表示しない</text>
+<rect x="530" y="360" width="280" height="40" rx="20" fill="#a3672b"/>
+<text x="670" y="385" font-size="13" text-anchor="middle" fill="#fff" font-weight="bold">わかった</text>
+</svg>

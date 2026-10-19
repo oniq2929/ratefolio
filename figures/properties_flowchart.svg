@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="sans-serif">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker></defs>
+<rect width="900" height="520" fill="#ffffff"/>
+<text x="450" y="30" text-anchor="middle" font-size="18" font-weight="bold">記録保存の処理フロー（プロパティ・高速化後）</text>
+<rect x="30" y="60" width="220" height="74" rx="8" fill="#e8f0fe" stroke="#4c6ef5"/><text x="140" y="85" text-anchor="middle" font-size="13" font-weight="bold">写真を選択</text><text x="140" y="101" text-anchor="middle" font-size="11">その場でcompressImage開始</text><text x="140" y="117" text-anchor="middle" font-size="11">(Promiseを保持)</text>
+<rect x="330" y="60" width="240" height="74" rx="8" fill="#e8f0fe" stroke="#4c6ef5"/><text x="450" y="85" text-anchor="middle" font-size="13" font-weight="bold">入力・「記録する」</text><text x="450" y="101" text-anchor="middle" font-size="11">評価・プロパティ・タグ等</text><text x="450" y="117" text-anchor="middle" font-size="11">entryIdを端末で生成</text>
+<line x1="250" y1="97" x2="328" y2="97" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="650" y="60" width="220" height="74" rx="8" fill="#fff3bf" stroke="#f59f00"/><text x="760" y="85" text-anchor="middle" font-size="13" font-weight="bold">縮小結果を受け取る</text><text x="760" y="101" text-anchor="middle" font-size="11">多くは選択中に完了済み</text><text x="760" y="117" text-anchor="middle" font-size="11">失敗時は日本語エラー</text>
+<line x1="570" y1="97" x2="648" y2="97" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="760" y1="134" x2="760" y2="180" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/><text x="764" y="153" font-size="10" fill="#555">同時に送信</text>
+<rect x="560" y="182" width="310" height="84" rx="8" fill="#ffe8cc" stroke="#e8590c"/><text x="715" y="212" text-anchor="middle" font-size="13" font-weight="bold">Storageへ写真アップロード</text><text x="715" y="228" text-anchor="middle" font-size="11">{user_id}/{entry_id}.jpg</text><text x="715" y="244" text-anchor="middle" font-size="11">(写真がある場合のみ)</text>
+<rect x="120" y="182" width="360" height="84" rx="8" fill="#ffe8cc" stroke="#e8590c"/><text x="300" y="204" text-anchor="middle" font-size="13" font-weight="bold">rpc("create_entry")</text><text x="300" y="220" text-anchor="middle" font-size="11">entries + entry_scores を</text><text x="300" y="236" text-anchor="middle" font-size="11">1回の通信・1トランザクションで保存</text><text x="300" y="252" text-anchor="middle" font-size="11">owner_id は auth.uid()（RLS有効）</text>
+<line x1="650" y1="134" x2="300" y2="180" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="300" y="320" width="300" height="70" rx="8" fill="#fff3bf" stroke="#f59f00"/><text x="450" y="351" text-anchor="middle" font-size="13" font-weight="bold">両方の結果を確認</text><text x="450" y="367" text-anchor="middle" font-size="11">Promise.all で待ち合わせ</text>
+<line x1="300" y1="266" x2="400" y2="318" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="715" y1="266" x2="520" y2="318" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="60" y="430" width="340" height="70" rx="8" fill="#d3f9d8" stroke="#2f9e44"/><text x="230" y="453" text-anchor="middle" font-size="13" font-weight="bold">成功</text><text x="230" y="469" text-anchor="middle" font-size="11">完了表示・入力欄をリセット</text><text x="230" y="485" text-anchor="middle" font-size="11">ジャンルは保持して連続記録</text>
+<rect x="500" y="430" width="340" height="70" rx="8" fill="#ffe3e3" stroke="#e03131"/><text x="670" y="453" text-anchor="middle" font-size="13" font-weight="bold">片方だけ失敗</text><text x="670" y="469" text-anchor="middle" font-size="11">成功した側を削除して片付け</text><text x="670" y="485" text-anchor="middle" font-size="11">(写真だけ・記録だけを残さない)</text>
+<line x1="400" y1="390" x2="230" y2="428" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="500" y1="390" x2="670" y2="428" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+</svg>
