@@ -20,7 +20,7 @@
 ## 3. ディレクトリ構成
 
 ```
-C:\claude_dev\rating-log-app\
+C:\claude_dev\ratefolio\
 ├── src/                      # コード本体
 ├── docs/
 │   └── templates/
